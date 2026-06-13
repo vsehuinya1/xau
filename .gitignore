@@ -1,0 +1,12 @@
+data/*.csv
+data/*.zip
+data/*.txt
+data/*.log
+data/bls.ics
+results/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+events/calendar_cache.json
