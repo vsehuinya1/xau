@@ -14,6 +14,7 @@ DATA_DIR = Path(__file__).resolve().parent
 
 
 def download_year(year: int, retries: int = 5) -> Path:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
     zip_path = DATA_DIR / f"DAT_ASCII_XAUUSD_M1_{year}.zip"
     csv_path = DATA_DIR / f"DAT_ASCII_XAUUSD_M1_{year}.csv"
     if csv_path.exists():
@@ -23,8 +24,14 @@ def download_year(year: int, retries: int = 5) -> Path:
     for attempt in range(1, retries + 1):
         try:
             print(f"downloading {year} (attempt {attempt})")
-            dl(year=str(year), month=None, pair="xauusd",
-               platform=P.GENERIC_ASCII, time_frame=TF.ONE_MINUTE)
+            cwd = Path.cwd()
+            try:
+                import os
+                os.chdir(DATA_DIR)
+                dl(year=str(year), month=None, pair="xauusd",
+                   platform=P.GENERIC_ASCII, time_frame=TF.ONE_MINUTE)
+            finally:
+                os.chdir(cwd)
             if zip_path.exists():
                 with zipfile.ZipFile(zip_path) as zf:
                     zf.extractall(DATA_DIR)
