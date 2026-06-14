@@ -19,7 +19,6 @@ UTC = ZoneInfo("UTC")
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 RESULTS_DIR = Path(__file__).resolve().parent.parent / "results"
 
-# Key session anchors (UTC). Histdata timestamps are GMT/UTC.
 SESSION_ANCHORS = {
     "asia_open": time(0, 0),
     "london_open": time(7, 0),
@@ -30,15 +29,14 @@ SESSION_ANCHORS = {
     "ny_close": time(21, 0),
 }
 
-# Prior-session lookback windows used for range definition (hours before anchor).
 PRIOR_WINDOWS_H = {
-    "asia_open": 7,       # 17:00 prev day -> 00:00 (approx prior NY)
-    "london_open": 7,     # 00:00 -> 07:00 Asia
-    "london_fix_am": 3,   # 07:30 -> 10:30
-    "ny_open": 6,         # 07:30 -> 13:30 London morning
-    "us_data_window": 4,  # 08:30 -> 12:30
-    "london_fix_pm": 2,   # 13:00 -> 15:00
-    "ny_close": 8,        # 13:00 -> 21:00 NY session
+    "asia_open": 7,
+    "london_open": 7,
+    "london_fix_am": 3,
+    "ny_open": 6,
+    "us_data_window": 4,
+    "london_fix_pm": 2,
+    "ny_close": 8,
 }
 
 HOLD_MINUTES = [30, 60, 120]
@@ -58,7 +56,33 @@ class Trade:
     hold_min: int
 
 
-def load_bars(years: range) -> pd.DataFrame:
+@dataclass
+class BarStore:
+    ts: np.ndarray
+    open_: np.ndarray
+    high: np.ndarray
+    low: np.ndarray
+    close: np.ndarray
+
+    @property
+    def n(self) -> int:
+        return len(self.ts)
+
+    def idx_at(self, t: np.datetime64) -> int:
+        return int(np.searchsorted(self.ts, t, side="left"))
+
+    def idx_before(self, t: np.datetime64) -> int:
+        return int(np.searchsorted(self.ts, t, side="right")) - 1
+
+    def window_hi_lo(self, i0: int, i1: int) -> tuple[float, float] | None:
+        if i0 >= i1:
+            return None
+        hi = float(np.max(self.high[i0:i1]))
+        lo = float(np.min(self.low[i0:i1]))
+        return hi, lo
+
+
+def load_bars(years: range) -> BarStore:
     frames = []
     for year in years:
         path = DATA_DIR / f"DAT_ASCII_XAUUSD_M1_{year}.csv"
@@ -70,43 +94,40 @@ def load_bars(years: range) -> pd.DataFrame:
         )
         df["ts"] = pd.to_datetime(df["dt_str"], format="%Y%m%d %H%M%S", utc=True)
         frames.append(df[["ts", "open", "high", "low", "close"]])
-    bars = pd.concat(frames, ignore_index=True).sort_values("ts")
-    return bars.drop_duplicates("ts").set_index("ts")
+    bars = pd.concat(frames, ignore_index=True).sort_values("ts").drop_duplicates("ts")
+    return BarStore(
+        ts=bars["ts"].values.astype("datetime64[ns]"),
+        open_=bars["open"].to_numpy(dtype=float),
+        high=bars["high"].to_numpy(dtype=float),
+        low=bars["low"].to_numpy(dtype=float),
+        close=bars["close"].to_numpy(dtype=float),
+    )
 
 
-def slice_window(bars: pd.DataFrame, start: datetime, end: datetime) -> pd.DataFrame:
-    return bars[(bars.index >= start) & (bars.index < end)]
-
-
-def range_hi_lo(win: pd.DataFrame) -> tuple[float, float] | None:
-    if win.empty:
-        return None
-    return float(win["high"].max()), float(win["low"].min())
-
-
-def price_at(bars: pd.DataFrame, ts: datetime, col: str = "open") -> float | None:
-    idx = bars.index.searchsorted(ts)
-    if idx >= len(bars):
-        return None
-    return float(bars.iloc[idx][col])
+def to_ns(day: datetime, t: time) -> np.datetime64:
+    return np.datetime64(datetime.combine(day.date(), t, tzinfo=UTC).replace(tzinfo=None))
 
 
 def make_trade(
     strategy: str,
     session: str,
-    entry_ts: datetime,
+    entry_i: int,
+    store: BarStore,
     direction: int,
-    entry_px: float,
-    exit_px: float,
     hold_min: int,
     cost_rt: float,
-) -> Trade:
+) -> Trade | None:
+    exit_i = store.idx_at(store.ts[entry_i] + np.timedelta64(hold_min, "m"))
+    if exit_i >= store.n:
+        return None
+    entry_px = store.close[entry_i]
+    exit_px = store.close[exit_i]
     gross = direction * (exit_px - entry_px)
     return Trade(
         strategy=strategy,
         session=session,
-        entry_ts=entry_ts,
-        exit_ts=entry_ts + timedelta(minutes=hold_min),
+        entry_ts=pd.Timestamp(store.ts[entry_i]).to_pydatetime().replace(tzinfo=UTC),
+        exit_ts=pd.Timestamp(store.ts[exit_i]).to_pydatetime().replace(tzinfo=UTC),
         direction=direction,
         gross_pnl=gross,
         net_pnl=gross - cost_rt,
@@ -115,160 +136,94 @@ def make_trade(
 
 
 def session_breakout(
-    bars: pd.DataFrame,
-    day: datetime,
-    session: str,
-    anchor: time,
-    lookback_h: int,
-    hold_min: int,
-    cost_rt: float,
+    store: BarStore, day: datetime, session: str, anchor: time,
+    lookback_h: int, hold_min: int, cost_rt: float,
 ) -> Trade | None:
-    anchor_ts = datetime.combine(day.date(), anchor, tzinfo=UTC)
-    prior_start = anchor_ts - timedelta(hours=lookback_h)
-    prior = slice_window(bars, prior_start, anchor_ts)
-    rng = range_hi_lo(prior)
+    anchor_ns = to_ns(day, anchor)
+    i0 = store.idx_at(anchor_ns - np.timedelta64(lookback_h, "h"))
+    i1 = store.idx_at(anchor_ns)
+    rng = store.window_hi_lo(i0, i1)
     if rng is None:
         return None
     hi, lo = rng
-
-    post = slice_window(bars, anchor_ts, anchor_ts + timedelta(minutes=30))
-    if post.empty:
-        return None
-
-    direction = 0
-    entry_ts = None
-    for ts, row in post.iterrows():
-        if row["close"] > hi:
-            direction = 1
-            entry_ts = ts
-            break
-        if row["close"] < lo:
-            direction = -1
-            entry_ts = ts
-            break
-    if direction == 0 or entry_ts is None:
-        return None
-
-    entry_px = float(post.loc[entry_ts, "close"])
-    exit_ts = entry_ts + timedelta(minutes=hold_min)
-    exit_px = price_at(bars, exit_ts, "close")
-    if exit_px is None:
-        return None
-    return make_trade("session_breakout", session, entry_ts, direction, entry_px, exit_px, hold_min, cost_rt)
+    i2 = store.idx_at(anchor_ns + np.timedelta64(30, "m"))
+    for i in range(i1, min(i2, store.n)):
+        c = store.close[i]
+        if c > hi:
+            return make_trade("session_breakout", session, i, store, 1, hold_min, cost_rt)
+        if c < lo:
+            return make_trade("session_breakout", session, i, store, -1, hold_min, cost_rt)
+    return None
 
 
 def opening_range_breakout(
-    bars: pd.DataFrame,
-    day: datetime,
-    session: str,
-    anchor: time,
-    hold_min: int,
-    cost_rt: float,
+    store: BarStore, day: datetime, session: str, anchor: time,
+    hold_min: int, cost_rt: float,
 ) -> Trade | None:
-    anchor_ts = datetime.combine(day.date(), anchor, tzinfo=UTC)
-    orb_end = anchor_ts + timedelta(minutes=ORB_MINUTES)
-    orb = slice_window(bars, anchor_ts, orb_end)
-    if len(orb) < 10:
+    anchor_ns = to_ns(day, anchor)
+    i0 = store.idx_at(anchor_ns)
+    i1 = store.idx_at(anchor_ns + np.timedelta64(ORB_MINUTES, "m"))
+    if i1 - i0 < 10:
         return None
-    hi, lo = float(orb["high"].max()), float(orb["low"].min())
+    hi, lo = store.window_hi_lo(i0, i1) or (0.0, 0.0)
     if hi <= lo:
         return None
-
-    post = slice_window(bars, orb_end, orb_end + timedelta(minutes=60))
-    direction = 0
-    entry_ts = None
-    for ts, row in post.iterrows():
-        if row["close"] > hi:
-            direction = 1
-            entry_ts = ts
-            break
-        if row["close"] < lo:
-            direction = -1
-            entry_ts = ts
-            break
-    if direction == 0 or entry_ts is None:
-        return None
-
-    entry_px = float(post.loc[entry_ts, "close"])
-    exit_px = price_at(bars, entry_ts + timedelta(minutes=hold_min), "close")
-    if exit_px is None:
-        return None
-    return make_trade("orb", session, entry_ts, direction, entry_px, exit_px, hold_min, cost_rt)
+    i2 = store.idx_at(anchor_ns + np.timedelta64(ORB_MINUTES + 60, "m"))
+    for i in range(i1, min(i2, store.n)):
+        c = store.close[i]
+        if c > hi:
+            return make_trade("orb", session, i, store, 1, hold_min, cost_rt)
+        if c < lo:
+            return make_trade("orb", session, i, store, -1, hold_min, cost_rt)
+    return None
 
 
 def failed_breakout_revert(
-    bars: pd.DataFrame,
-    day: datetime,
-    session: str,
-    anchor: time,
-    lookback_h: int,
-    hold_min: int,
-    cost_rt: float,
+    store: BarStore, day: datetime, session: str, anchor: time,
+    lookback_h: int, hold_min: int, cost_rt: float,
 ) -> Trade | None:
-    anchor_ts = datetime.combine(day.date(), anchor, tzinfo=UTC)
-    prior_start = anchor_ts - timedelta(hours=lookback_h)
-    prior = slice_window(bars, prior_start, anchor_ts)
-    rng = range_hi_lo(prior)
+    anchor_ns = to_ns(day, anchor)
+    i0 = store.idx_at(anchor_ns - np.timedelta64(lookback_h, "h"))
+    i1 = store.idx_at(anchor_ns)
+    rng = store.window_hi_lo(i0, i1)
     if rng is None:
         return None
     hi, lo = rng
-
-    watch = slice_window(bars, anchor_ts, anchor_ts + timedelta(minutes=FAIL_REVERT_MINUTES + 30))
-    if watch.empty:
-        return None
-
-    failed_dir = 0
-    entry_ts = None
-    pierced_up = False
-    pierced_dn = False
-
-    for ts, row in watch.iterrows():
-        if row["high"] > hi:
+    i2 = store.idx_at(anchor_ns + np.timedelta64(FAIL_REVERT_MINUTES + 30, "m"))
+    pierced_up = pierced_dn = False
+    for i in range(i1, min(i2, store.n)):
+        if store.high[i] > hi:
             pierced_up = True
-        if row["low"] < lo:
+        if store.low[i] < lo:
             pierced_dn = True
-        if pierced_up and row["close"] < hi:
-            failed_dir = -1
-            entry_ts = ts
+        c = store.close[i]
+        if pierced_up and c < hi:
+            return make_trade("failed_breakout_fade", session, i, store, -1, hold_min, cost_rt)
+        if pierced_dn and c > lo:
+            return make_trade("failed_breakout_fade", session, i, store, 1, hold_min, cost_rt)
+        if store.ts[i] >= anchor_ns + np.timedelta64(FAIL_REVERT_MINUTES, "m"):
             break
-        if pierced_dn and row["close"] > lo:
-            failed_dir = 1
-            entry_ts = ts
-            break
-        if ts >= anchor_ts + timedelta(minutes=FAIL_REVERT_MINUTES):
-            break
-
-    if failed_dir == 0 or entry_ts is None:
-        return None
-
-    entry_px = float(watch.loc[entry_ts, "close"])
-    exit_px = price_at(bars, entry_ts + timedelta(minutes=hold_min), "close")
-    if exit_px is None:
-        return None
-    return make_trade("failed_breakout_fade", session, entry_ts, failed_dir, entry_px, exit_px, hold_min, cost_rt)
+    return None
 
 
-def trading_days(bars: pd.DataFrame) -> list[datetime]:
-    days = pd.Series(bars.index.date).unique()
-    return [datetime.combine(d, time(0, 0), tzinfo=UTC) for d in sorted(days)]
+def trading_days(store: BarStore) -> list[datetime]:
+    days = pd.to_datetime(store.ts).date
+    unique = sorted(set(days))
+    return [datetime.combine(d, time(0, 0), tzinfo=UTC) for d in unique]
 
 
 def random_control_trade(
-    bars: pd.DataFrame,
-    day: datetime,
-    strategy: str,
-    hold_min: int,
-    cost_rt: float,
-    seed: int,
+    store: BarStore, day: datetime, strategy: str,
+    hold_min: int, cost_rt: float, seed: int,
 ) -> Trade | None:
     rng = random.Random(seed)
     fake_anchor = time(rng.randint(8, 19), rng.choice([0, 15, 30, 45]))
     session = "random"
     if strategy == "session_breakout":
-        return session_breakout(bars, day, session, fake_anchor, 4, hold_min, cost_rt)
+        return session_breakout(store, day, session, fake_anchor, 4, hold_min, cost_rt)
     if strategy == "orb":
-        return opening_range_breakout(bars, day, session, fake_anchor, hold_min, cost_rt)
-    return failed_breakout_revert(bars, day, session, fake_anchor, 4, hold_min, cost_rt)
+        return opening_range_breakout(store, day, session, fake_anchor, hold_min, cost_rt)
+    return failed_breakout_revert(store, day, session, fake_anchor, 4, hold_min, cost_rt)
 
 
 def summarize(trades: list[Trade]) -> dict:
@@ -285,17 +240,13 @@ def summarize(trades: list[Trade]) -> dict:
 
 
 def by_session(trades: list[Trade]) -> dict[str, dict]:
-    out: dict[str, dict] = {}
-    for s in SESSION_ANCHORS:
-        out[s] = summarize([t for t in trades if t.session == s])
-    return out
+    return {s: summarize([t for t in trades if t.session == s]) for s in SESSION_ANCHORS}
 
 
 def by_year(trades: list[Trade]) -> dict[int, float]:
     out: dict[int, float] = {}
     for t in trades:
-        y = t.entry_ts.year
-        out[y] = out.get(y, 0.0) + t.net_pnl
+        out[t.entry_ts.year] = out.get(t.entry_ts.year, 0.0) + t.net_pnl
     return dict(sorted(out.items()))
 
 
@@ -308,68 +259,56 @@ def top_n_removed_positive(trades: list[Trade], n: int = 5) -> bool:
 
 def run_test(cost_multiplier: float = 2.0, base_spread: float = 0.40) -> str:
     cost_rt = base_spread * cost_multiplier
-    bars = load_bars(range(2018, 2026))
-    days = trading_days(bars)
+    store = load_bars(range(2018, 2026))
+    days = trading_days(store)
 
     lines: list[str] = []
     lines.append("=" * 60)
     lines.append("TEST 2: SESSION / TIME-OF-DAY BEHAVIOR")
     lines.append("=" * 60)
-    lines.append(f"Data range: {bars.index.min()} -> {bars.index.max()}")
-    lines.append(f"Bars: {len(bars):,}")
+    lines.append(f"Data range: {pd.Timestamp(store.ts[0])} -> {pd.Timestamp(store.ts[-1])}")
+    lines.append(f"Bars: {store.n:,}")
     lines.append(f"Trading days: {len(days):,}")
     lines.append(f"Cost RT @ {cost_multiplier}x spread: {cost_rt:.2f} pts")
     lines.append("")
 
-    strategies = {
-        "session_breakout": session_breakout,
-        "orb": opening_range_breakout,
-        "failed_breakout_fade": failed_breakout_revert,
-    }
+    strategies = ("session_breakout", "orb", "failed_breakout_fade")
+    all_trades: dict[str, dict[int, list[Trade]]] = {s: {} for s in strategies}
+    controls: dict[str, dict[int, list[Trade]]] = {s: {} for s in strategies}
 
-    all_trades: dict[str, dict[int, list[Trade]]] = {}
-    controls: dict[str, dict[int, list[Trade]]] = {}
-
-    for strat_name, strat_fn in strategies.items():
-        all_trades[strat_name] = {}
-        controls[strat_name] = {}
+    for strat in strategies:
         for hold in HOLD_MINUTES:
             trades: list[Trade] = []
             ctrl: list[Trade] = []
             for i, day in enumerate(days):
                 for session, anchor in SESSION_ANCHORS.items():
                     lookback = PRIOR_WINDOWS_H[session]
-                    if strat_name == "session_breakout":
-                        t = strat_fn(bars, day, session, anchor, lookback, hold, cost_rt)
-                    elif strat_name == "orb":
-                        t = strat_fn(bars, day, session, anchor, hold, cost_rt)
+                    if strat == "session_breakout":
+                        t = session_breakout(store, day, session, anchor, lookback, hold, cost_rt)
+                    elif strat == "orb":
+                        t = opening_range_breakout(store, day, session, anchor, hold, cost_rt)
                     else:
-                        t = strat_fn(bars, day, session, anchor, lookback, hold, cost_rt)
+                        t = failed_breakout_revert(store, day, session, anchor, lookback, hold, cost_rt)
                     if t:
                         trades.append(t)
                 for j in range(2):
-                    ct = random_control_trade(bars, day, strat_name, hold, cost_rt, seed=i * 10 + j)
+                    ct = random_control_trade(store, day, strat, hold, cost_rt, seed=i * 10 + j)
                     if ct:
                         ctrl.append(ct)
-            all_trades[strat_name][hold] = trades
-            controls[strat_name][hold] = ctrl
+            all_trades[strat][hold] = trades
+            controls[strat][hold] = ctrl
 
     lines.append("--- STRATEGY x HOLD RESULTS (60m) ---")
-    best_combo = None
-    best_net = -1e18
-    for strat_name in strategies:
-        s = summarize(all_trades[strat_name][60])
-        c = summarize(controls[strat_name][60])
+    for strat in strategies:
+        s = summarize(all_trades[strat][60])
+        c = summarize(controls[strat][60])
         lines.append(
-            f"{strat_name:22s} n={s['n']:5d} net={s['net']:9.1f} avg={s['avg']:7.4f} "
+            f"{strat:22s} n={s['n']:5d} net={s['net']:9.1f} avg={s['avg']:7.4f} "
             f"win%={s['win_pct']:5.1f} | control_avg={c['avg']:7.4f}"
         )
-        if s["net"] > best_net:
-            best_net = s["net"]
-            best_combo = (strat_name, 60)
 
     lines.append("")
-    lines.append("--- SESSION BREAKDOWN (best: session_breakout 60m) ---")
+    lines.append("--- SESSION BREAKDOWN (session_breakout 60m) ---")
     sb60 = all_trades["session_breakout"][60]
     for session, s in by_session(sb60).items():
         if s["n"] > 0:
@@ -384,10 +323,7 @@ def run_test(cost_multiplier: float = 2.0, base_spread: float = 0.40) -> str:
     lines.append("--- FALSIFICATION CHECKS ---")
     kills: list[str] = []
 
-    positive_strats = sum(
-        1 for s in strategies if summarize(all_trades[s][60])["net"] > 0
-    )
-    if positive_strats == 0:
+    if sum(1 for s in strategies if summarize(all_trades[s][60])["net"] > 0) == 0:
         kills.append("KILL #1: all strategies negative after costs at 60m hold")
 
     sb = summarize(sb60)
@@ -395,8 +331,7 @@ def run_test(cost_multiplier: float = 2.0, base_spread: float = 0.40) -> str:
     if sb_ctrl["avg"] >= sb["avg"]:
         kills.append("KILL #2: random-time control matches/beats session signals")
 
-    profitable_sessions = sum(1 for s in by_session(sb60).values() if s["net"] > 0)
-    if profitable_sessions < 2:
+    if sum(1 for s in by_session(sb60).values() if s["net"] > 0) < 2:
         kills.append("KILL #3: edge concentrated in <2 session buckets")
 
     y18_21 = sum(yearly.get(y, 0) for y in range(2018, 2022))
