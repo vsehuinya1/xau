@@ -51,7 +51,11 @@ def load_bars(years: range) -> pd.DataFrame:
             path, sep=";", header=None,
             names=["dt_str", "open", "high", "low", "close", "volume"],
         )
-        df["ts"] = pd.to_datetime(df["dt_str"], format="%Y%m%d %H%M%S", utc=True)
+        # histdata.com ASCII timestamps are EST (UTC-5, no DST). Localize as a
+        # fixed -5 offset, then convert to true UTC so they align with the
+        # DST-aware event calendar.
+        naive = pd.to_datetime(df["dt_str"], format="%Y%m%d %H%M%S")
+        df["ts"] = naive.dt.tz_localize("Etc/GMT+5").dt.tz_convert("UTC")
         frames.append(df[["ts", "open", "high", "low", "close"]])
     bars = pd.concat(frames, ignore_index=True).sort_values("ts")
     bars = bars.drop_duplicates("ts").set_index("ts")
