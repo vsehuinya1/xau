@@ -35,6 +35,16 @@ Kill if any of:
 - 2022–2025 negative while 2018–2021 positive
 - Removing top 5 trades flips PnL negative
 
+## Test 2 (session / time-of-day)
+
+```bash
+bash deploy/vps_run_test2.sh
+python3 backtests/test2_session_timing.py
+```
+
+Strategies: session breakout, opening-range breakout, failed-breakout fade.
+Sessions: Asia/London/NY opens, London fix, US data window, NY close.
+
 ## Data
 
 - XAUUSD M1 from [histdata.com](https://www.histdata.com/) (GMT timestamps)
