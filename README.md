@@ -45,6 +45,24 @@ python3 backtests/test2_session_timing.py
 Strategies: session breakout, opening-range breakout, failed-breakout fade.
 Sessions: Asia/London/NY opens, London fix, US data window, NY close.
 
+## Test 1b (FOMC drill-down)
+
+```bash
+python3 backtests/test1b_fomc_drill.py
+```
+
+Stresses the FOMC sub-signal: hold curve, t-stat, bootstrap CI, OOS split,
+directionality, cost sensitivity, random-time control.
+
+## Test 3 (volatility regime breakout)
+
+```bash
+python3 backtests/test3_vol_breakout.py
+```
+
+Donchian breakout taken only after low-ATR-percentile compression, vs the same
+breakout unfiltered. Core test: does the compression filter improve expectancy?
+
 ## Data
 
 - XAUUSD M1 from [histdata.com](https://www.histdata.com/) (GMT timestamps)
