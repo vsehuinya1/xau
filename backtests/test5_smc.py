@@ -146,9 +146,14 @@ PARAM_GRID: Dict[str, list] = {
     "sl_buffer_atr":      [0.1, 0.2],
     "rr_ratio":           [1.5, 2.0, 3.0],
     "close_on_bias_flip": [True, False],
-    "min_atr_pct":        [15.0, 20.0, 30.0],
+    "min_atr_pct":        [10.0, 20.0, 30.0],
+    "max_atr_pct":        [75.0, 85.0, 95.0],
     "slope_filter":       [True, False],
+    "slope_lookback":     [2, 4, 8],
     "session_filter":     [True, False],
+    # ── H4 ADX regime gate (Branch C)
+    "adx_filter":         [True, False],
+    "adx_threshold":      [20.0, 25.0, 30.0],
 }
 
 # Default values for "simplicity" counting in Step 3
@@ -165,8 +170,12 @@ DEFAULTS: Dict[str, object] = {
     "rr_ratio":           2.0,
     "close_on_bias_flip": False,
     "min_atr_pct":        20.0,
+    "max_atr_pct":        85.0,
     "slope_filter":       True,
+    "slope_lookback":     4,
     "session_filter":     True,
+    "adx_filter":         False,
+    "adx_threshold":      25.0,
 }
 
 # Fixed params (not in grid)
@@ -290,7 +299,9 @@ def _get_regime(ds: DataStore, p: StrategyParams) -> RegimeArrays:
         )
         _regime_cache[key] = compute_regime(
             ds.m1.ts, ds.m15.ts, ds.m15.atr_pct,
-            ds.h1.ts, ds.h1.ema_slow, rp,
+            ds.h1.ts, ds.h1.ema_slow,
+            ds.h4.ts, ds.h4.high, ds.h4.low, ds.h4.close,
+            rp,
         )
     return _regime_cache[key]
 

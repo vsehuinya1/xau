@@ -53,6 +53,7 @@ class DataStore:
     m5:  BarData
     m15: BarData
     h1:  BarData
+    h4:  BarData
 
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
@@ -206,15 +207,20 @@ def load(start_year: int = 2018, end_year: int = 2025) -> DataStore:
     print("  resampling → H1 …")
     h1_df  = _resample(m1_df, "1h")
 
+    print("  resampling → H4 …")
+    h4_df  = _resample(m1_df, "4h")
+
     print("  computing ATR / derived series …")
-    # M1  : only ATR needed (atr_pct and ema_slow are not used on M1)
+    # M1  : only ATR needed
     # M5  : ATR only (structure detection)
     # M15 : ATR + ATR-percentile (regime volatility filter)
     # H1  : ATR + slow EMA       (regime slope filter)
+    # H4  : ATR only             (ADX regime filter)
     m1  = _to_bar_data(m1_df,  compute_atr_pct=False, compute_ema=False)
     m5  = _to_bar_data(m5_df,  compute_atr_pct=False, compute_ema=False)
     m15 = _to_bar_data(m15_df, compute_atr_pct=True,  compute_ema=False)
     h1  = _to_bar_data(h1_df,  compute_atr_pct=False, compute_ema=True)
+    h4  = _to_bar_data(h4_df,  compute_atr_pct=False, compute_ema=False)
 
-    print(f"  done — M1={m1.n:,}  M5={m5.n:,}  M15={m15.n:,}  H1={h1.n:,}")
-    return DataStore(m1=m1, m5=m5, m15=m15, h1=h1)
+    print(f"  done — M1={m1.n:,}  M5={m5.n:,}  M15={m15.n:,}  H1={h1.n:,}  H4={h4.n:,}")
+    return DataStore(m1=m1, m5=m5, m15=m15, h1=h1, h4=h4)

@@ -62,10 +62,11 @@ class RegimeParams:
 @dataclass
 class RegimeArrays:
     """Per-M1-bar regime arrays consumed by the simulation loop."""
-    in_session:   np.ndarray   # bool (N,)  — bar inside a tradeable session
-    vol_ok:       np.ndarray   # bool (N,)  — ATR percentile in range
+    in_session:   np.ndarray   # bool (N,)    — bar inside a tradeable session
+    vol_ok:       np.ndarray   # bool (N,)    — ATR percentile in range
     h1_ema_slope: np.ndarray   # float64 (N,) — H1 EMA slope (sign = bias)
-    # Composite pre-filter (session AND vol).  Slope is checked per-signal.
+    h4_adx:       np.ndarray   # float64 (N,) — H4 ADX mapped to each M1 bar
+    # Composite pre-filter (session AND vol).  Slope/ADX checked per-signal.
     is_tradeable: np.ndarray   # bool (N,)
 
 
@@ -129,6 +130,82 @@ def _h1_slope_at_m1(
     return slopes
 
 
+def _wilder_adx(
+    high:   np.ndarray,
+    low:    np.ndarray,
+    close:  np.ndarray,
+    period: int = 14,
+) -> np.ndarray:
+    """
+    Wilder's Average Directional Index (ADX) on a bar series.
+    Returns array of same length; first (2×period−2) values are NaN.
+    A rising ADX > threshold signals a trending regime regardless of direction.
+    """
+    N = len(high)
+    adx = np.full(N, np.nan)
+    if N < 2 * period:
+        return adx
+
+    # True Range
+    prev_close = np.empty(N)
+    prev_close[0] = close[0]
+    prev_close[1:] = close[:-1]
+    tr = np.maximum(high - low,
+                    np.maximum(np.abs(high - prev_close),
+                               np.abs(low  - prev_close)))
+
+    # Directional Movement
+    plus_dm  = np.zeros(N)
+    minus_dm = np.zeros(N)
+    for i in range(1, N):
+        up   = high[i] - high[i - 1]
+        down = low[i - 1] - low[i]
+        if up > down and up > 0:
+            plus_dm[i] = up
+        elif down > up and down > 0:
+            minus_dm[i] = down
+
+    # Wilder smoothed totals (seed = sum of first period bars)
+    s_tr   = np.full(N, np.nan)
+    s_pdm  = np.full(N, np.nan)
+    s_mdm  = np.full(N, np.nan)
+    s_tr[period - 1]  = tr[:period].sum()
+    s_pdm[period - 1] = plus_dm[:period].sum()
+    s_mdm[period - 1] = minus_dm[:period].sum()
+    for i in range(period, N):
+        s_tr[i]  = s_tr[i-1]  - s_tr[i-1]  / period + tr[i]
+        s_pdm[i] = s_pdm[i-1] - s_pdm[i-1] / period + plus_dm[i]
+        s_mdm[i] = s_mdm[i-1] - s_mdm[i-1] / period + minus_dm[i]
+
+    # +DI / −DI / DX
+    with np.errstate(invalid="ignore", divide="ignore"):
+        plus_di  = np.where(s_tr > 0, 100.0 * s_pdm / s_tr, 0.0)
+        minus_di = np.where(s_tr > 0, 100.0 * s_mdm / s_tr, 0.0)
+        di_sum   = plus_di + minus_di
+        dx       = np.where(di_sum > 0, 100.0 * np.abs(plus_di - minus_di) / di_sum, 0.0)
+
+    # ADX = Wilder EMA of DX, seeded at bar (2×period−2)
+    start = 2 * period - 2
+    if N <= start:
+        return adx
+    adx[start] = dx[period - 1: start + 1].mean()
+    for i in range(start + 1, N):
+        adx[i] = (adx[i - 1] * (period - 1) + dx[i]) / period
+
+    return adx
+
+
+def _h4_adx_at_m1(
+    ts_m1:   np.ndarray,
+    ts_h4:   np.ndarray,
+    adx_h4:  np.ndarray,
+) -> np.ndarray:
+    """Forward-fill H4 ADX values onto every M1 bar."""
+    idx = np.searchsorted(ts_h4, ts_m1, side="right") - 1
+    idx = np.clip(idx, 0, len(adx_h4) - 1)
+    return adx_h4[idx]
+
+
 # ── Public API ────────────────────────────────────────────────────────────────
 
 def compute_regime(
@@ -137,6 +214,10 @@ def compute_regime(
     atr_pct_m15: np.ndarray,
     ts_h1:       np.ndarray,
     ema_h1:      np.ndarray,
+    ts_h4:       np.ndarray,
+    high_h4:     np.ndarray,
+    low_h4:      np.ndarray,
+    close_h4:    np.ndarray,
     params:      RegimeParams,
 ) -> RegimeArrays:
     """
@@ -149,11 +230,17 @@ def compute_regime(
     atr_pct_m15  : 200-bar rolling ATR percentile on M15
     ts_h1        : H1 bar timestamps
     ema_h1       : 50-bar EMA of H1 close
+    ts_h4        : H4 bar timestamps
+    high_h4      : H4 high prices
+    low_h4       : H4 low prices
+    close_h4     : H4 close prices
     params       : RegimeParams
 
     Returns
     -------
     RegimeArrays  — consumed by the simulation hot loop via O(1) index lookups.
+    ADX is always computed; the threshold gate is applied in the sim loop
+    via StrategyParams.adx_filter / adx_threshold.
     """
     in_session = _session_mask(ts_m1, params.session_filter)
 
@@ -162,12 +249,15 @@ def compute_regime(
         (m15_pct_for_m1 >= params.min_atr_pct) &
         (m15_pct_for_m1 <= params.max_atr_pct)
     )
-    # Bars with NaN ATR-pct (insufficient history) are not tradeable
     vol_ok[np.isnan(m15_pct_for_m1)] = False
 
     slope = _h1_slope_at_m1(
         ts_m1, ts_h1, ema_h1, params.slope_lookback, params.slope_filter
     )
+
+    # H4 ADX — always computed, threshold applied in simulation loop
+    adx_h4 = _wilder_adx(high_h4, low_h4, close_h4, period=14)
+    h4_adx  = _h4_adx_at_m1(ts_m1, ts_h4, adx_h4)
 
     is_tradeable = in_session & vol_ok
 
@@ -175,5 +265,6 @@ def compute_regime(
         in_session   = in_session,
         vol_ok       = vol_ok,
         h1_ema_slope = slope,
+        h4_adx       = h4_adx,
         is_tradeable = is_tradeable,
     )

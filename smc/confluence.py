@@ -91,6 +91,9 @@ class StrategyParams:
     slope_filter:        bool  = True
     slope_lookback:      int   = 4
     session_filter:      bool  = True
+    # ── H4 ADX regime gate (Branch C: trend-strength filter)
+    adx_filter:          bool  = False  # if True, only trade when H4 ADX ≥ adx_threshold
+    adx_threshold:       float = 25.0   # minimum H4 ADX to consider bar tradeable
 
 
 @dataclass
@@ -359,6 +362,12 @@ def run_simulation(
                     continue
                 if bias == -1 and slope > 0:
                     continue
+
+        # ── H4 ADX regime gate ──────────────────────────────────────────
+        if params.adx_filter:
+            adx_i = regime.h4_adx[i]
+            if np.isnan(adx_i) or adx_i < params.adx_threshold:
+                continue   # not in a trending regime
 
         # ── Pending fill check ───────────────────────────────────────────────
         if pending is not None:
