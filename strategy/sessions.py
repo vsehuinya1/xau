@@ -77,17 +77,22 @@ def compute_session_features(
     london_end_hour    : London + NY close (UTC, exclusive)
     range_pct_lookback : days for rolling Asian-range percentile
     """
-    ts_pd  = pd.DatetimeIndex(m1.ts)
-    hours  = ts_pd.hour.to_numpy()          # int array, shape (N,)
-    dates_d_vals = ts_pd.normalize().values  # datetime64[ns] array, shape (N,)
+    ts_pd        = pd.DatetimeIndex(m1.ts)
+    hours        = ts_pd.hour.to_numpy()           # int32 (N,)
+    dates_d_vals = ts_pd.normalize().values        # datetime64[ns] (N,)
 
-    unique_dates = np.unique(dates_d_vals)   # sorted calendar days
+    unique_dates = np.unique(dates_d_vals)         # sorted calendar days
     n_days       = len(unique_dates)
 
-    # date → day-index lookup (built once, O(n_days))
-    date_idx_map: dict = {d: i for i, d in enumerate(unique_dates)}
+    # ── Map each M1 bar to its day index via searchsorted (vectorised, O(N logD))
+    # All dates_d_vals are guaranteed to be in unique_dates, so result is exact.
+    day_idx = np.searchsorted(unique_dates, dates_d_vals, side="left")  # int64 (N,)
 
-    # Accumulators
+    # ── Session masks (vectorised boolean arrays)
+    asian_mask  = (hours >= asian_start_hour)  & (hours < asian_end_hour)
+    london_mask = (hours >= london_start_hour) & (hours < london_end_hour)
+
+    # ── Accumulators
     asian_high       = np.zeros(n_days)
     asian_low        = np.full(n_days, np.inf)
     asian_atr_sum    = np.zeros(n_days)
@@ -96,31 +101,34 @@ def compute_session_features(
     london_bar_start = np.full(n_days, -1, dtype=np.int64)
     london_bar_end   = np.full(n_days, -1, dtype=np.int64)
 
-    # Single pass over all M1 bars
-    for i in range(len(m1.ts)):
-        h  = int(hours[i])
-        di = date_idx_map.get(dates_d_vals[i], -1)
-        if di < 0:
-            continue
+    # ── Asian session: high / low / ATR accumulation
+    a_idx  = day_idx[asian_mask]
+    np.maximum.at(asian_high, a_idx, m1.high[asian_mask])
+    np.minimum.at(asian_low,  a_idx, m1.low[asian_mask])
 
-        # ── Asian session
-        if asian_start_hour <= h < asian_end_hour:
-            if m1.high[i] > asian_high[di]:
-                asian_high[di] = m1.high[i]
-            if m1.low[i] < asian_low[di]:
-                asian_low[di] = m1.low[i]
-            atr_i = m1.atr[i]
-            if not np.isnan(atr_i):
-                asian_atr_sum[di]   += atr_i
-                asian_bar_count[di] += 1
+    atr_vals      = m1.atr.copy()
+    atr_vals[np.isnan(atr_vals)] = 0.0   # replace NaN with 0 for sum
+    valid_atr     = asian_mask & ~np.isnan(m1.atr)
+    va_idx        = day_idx[valid_atr]
+    np.add.at(asian_atr_sum,   va_idx, m1.atr[valid_atr])
+    np.add.at(asian_bar_count, va_idx, 1)
 
-        # ── London (+ NY) session
-        if london_start_hour <= h < london_end_hour:
-            if london_bar_start[di] < 0:
-                london_bar_start[di] = i
-                atr_i = m1.atr[i]
-                london_open_atr[di] = atr_i if not np.isnan(atr_i) else 0.0
-            london_bar_end[di] = i
+    # ── London session: first / last bar per day
+    bar_indices   = np.arange(len(m1.ts), dtype=np.int64)
+    london_bars   = bar_indices[london_mask]       # M1 indices that are in London
+    london_di     = day_idx[london_mask]            # corresponding day indices
+
+    if len(london_bars) > 0:
+        # First bar per day: bars are time-ordered, so np.unique returns first index
+        _, first_pos = np.unique(london_di, return_index=True)
+        f_bars = london_bars[first_pos]
+        f_days = london_di[first_pos]
+        london_bar_start[f_days] = f_bars
+        f_atr  = m1.atr[f_bars]
+        london_open_atr[f_days] = np.where(np.isnan(f_atr), 0.0, f_atr)
+
+        # Last bar per day: use ufunc to find maximum bar index per day
+        np.maximum.at(london_bar_end, london_di, london_bars)
 
     # Fix days with no Asian bars (weekends / public holidays)
     no_data = asian_low == np.inf
