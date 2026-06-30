@@ -114,12 +114,16 @@ FIXED_PARAMS: Dict = {
 _session_cache: Dict[Tuple, SessionFeatures]   = {}
 _atr_pct_cache: Dict[Tuple, np.ndarray]        = {}   # per-day M15 atr_pct
 
+# DataStore stored as a global so fork-based workers inherit it via CoW
+# (zero serialisation overhead) instead of pickling it per job.
+_ds: Optional[DataStore] = None
 
-def _get_session_features(ds: DataStore, p: LBParams) -> SessionFeatures:
+
+def _get_session_features(p: LBParams) -> SessionFeatures:
     key = (p.asian_start_hour, p.asian_end_hour, p.range_pct_lookback)
     if key not in _session_cache:
         _session_cache[key] = compute_session_features(
-            ds.m1,
+            _ds.m1,
             asian_start_hour   = p.asian_start_hour,
             asian_end_hour     = p.asian_end_hour,
             range_pct_lookback = p.range_pct_lookback,
@@ -127,33 +131,30 @@ def _get_session_features(ds: DataStore, p: LBParams) -> SessionFeatures:
     return _session_cache[key]
 
 
-def _get_london_atr_pct(ds: DataStore, p: LBParams) -> np.ndarray:
+def _get_london_atr_pct(p: LBParams) -> np.ndarray:
     """
     Per-day M15 ATR-pct value at each day's London-open bar.
     Depends on range_pct_lookback (via session features).
     """
-    sf_key  = (p.asian_start_hour, p.asian_end_hour, p.range_pct_lookback)
+    sf_key = (p.asian_start_hour, p.asian_end_hour, p.range_pct_lookback)
     if sf_key in _atr_pct_cache:
         return _atr_pct_cache[sf_key]
 
-    sf = _get_session_features(ds, p)
-    m1_to_m15 = np.searchsorted(ds.m15.ts, ds.m1.ts, side="right") - 1
-    m1_to_m15 = np.clip(m1_to_m15, 0, len(ds.m15.atr_pct) - 1)
+    sf = _get_session_features(p)
+    m1_to_m15 = np.searchsorted(_ds.m15.ts, _ds.m1.ts, side="right") - 1
+    m1_to_m15 = np.clip(m1_to_m15, 0, len(_ds.m15.atr_pct) - 1)
 
     atr_pct_per_day = np.full(sf.n_days, np.nan)
     for di in range(sf.n_days):
         bstart = sf.london_bar_start[di]
         if bstart >= 0:
-            atr_pct_per_day[di] = ds.m15.atr_pct[m1_to_m15[bstart]]
+            atr_pct_per_day[di] = _ds.m15.atr_pct[m1_to_m15[bstart]]
 
     _atr_pct_cache[sf_key] = atr_pct_per_day
     return atr_pct_per_day
 
 
-def _precompute_all_caches(
-    ds:          DataStore,
-    params_list: List[LBParams],
-) -> None:
+def _precompute_all_caches(params_list: List[LBParams]) -> None:
     """
     Warm all caches before spawning workers.
     With fork-based multiprocessing the children inherit all arrays
@@ -165,14 +166,13 @@ def _precompute_all_caches(
     print(f"  Precomputing {len(sf_keys)} session-feature variant(s) …", flush=True)
     t0 = _time.time()
     for k in sf_keys:
-        # Dummy LBParams with the right session-definition keys
         dummy = LBParams(
             asian_start_hour   = k[0],
             asian_end_hour     = k[1],
             range_pct_lookback = k[2],
         )
-        _get_session_features(ds, dummy)
-        _get_london_atr_pct(ds, dummy)
+        _get_session_features(dummy)
+        _get_london_atr_pct(dummy)
     print(f"    done  {_time.time() - t0:.0f}s", flush=True)
 
 
@@ -221,13 +221,13 @@ def _calc_metrics(trades: List[Trade], account_size: float) -> SimMetrics:
 # ── WF worker ─────────────────────────────────────────────────────────────────
 
 def _evaluate_params(
-    args: Tuple[DataStore, LBParams, int],
+    args: Tuple[LBParams, int],
 ) -> Optional[Dict]:
-    ds, p, sample_idx = args
+    p, sample_idx = args
 
-    sf         = _get_session_features(ds, p)
-    atr_pct    = _get_london_atr_pct(ds, p)
-    n_days     = sf.n_days
+    sf      = _get_session_features(p)
+    atr_pct = _get_london_atr_pct(p)
+    n_days  = sf.n_days
 
     win_size = n_days // WF_WINDOWS
 
@@ -241,9 +241,9 @@ def _evaluate_params(
         is_end   = int(wf_start + (wf_end - wf_start) * (1.0 - OOS_FRACTION))
         oos_start = is_end
 
-        is_trades  = run_simulation(ds.m1, sf, atr_pct, p, EXEC_PARAMS,
+        is_trades  = run_simulation(_ds.m1, sf, atr_pct, p, EXEC_PARAMS,
                                     wf_start, is_end)
-        oos_trades = run_simulation(ds.m1, sf, atr_pct, p, EXEC_PARAMS,
+        oos_trades = run_simulation(_ds.m1, sf, atr_pct, p, EXEC_PARAMS,
                                     oos_start, wf_end)
 
         all_is_trades.extend(is_trades)
@@ -345,8 +345,11 @@ def main() -> None:
     params = _random_params(rng, args.samples)
 
     # ── Precompute caches (before forking)
+    # Set _ds global so fork-based workers inherit it via CoW (zero pickle cost)
+    global _ds
+    _ds = ds
     print("\nPrecomputing session features …")
-    _precompute_all_caches(ds, params)
+    _precompute_all_caches(params)
 
     # ── Run grid search
     print(f"\nRunning {args.samples} random parameter sets …  "
@@ -359,7 +362,7 @@ def main() -> None:
     ctx  = mp.get_context("fork")
     pool = ctx.Pool(processes=args.workers)
 
-    job_args = [(ds, p, i) for i, p in enumerate(params)]
+    job_args = [(p, i) for i, p in enumerate(params)]
 
     for done, result in enumerate(
         pool.imap_unordered(_evaluate_params, job_args), start=1
