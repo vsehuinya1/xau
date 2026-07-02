@@ -1,0 +1,12 @@
+diagnostic: D11ConditionalReturnDistribution
+cache: false
+emit_features: true
+parameters: {}
+statistical:
+  n_bootstrap: 2000
+  n_permutations: 5000
+  fdr_method: "bh"
+  alpha: 0.05
+subperiods:
+  - {start: "2018-01-01", end: "2021-12-31"}
+  - {start: "2022-01-01", end: "2025-12-31"}

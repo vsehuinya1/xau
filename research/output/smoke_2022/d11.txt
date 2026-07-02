@@ -1,0 +1,57 @@
+======================================================================
+  D11 — Forward return distributions at multiple horizons differ mat
+======================================================================
+  Date range    : 2022-01-02 → 2022-12-30
+  Sample size   : 354,568
+  Stability     : 0.50 / 1.00
+  Conclusion    : NEGATIVE
+
+  WARNINGS
+    ⚠  CI_CROSSES_ZERO: 'session_0_15m_mean' CI [-0.000, 0.000]
+    ⚠  CI_CROSSES_ZERO: 'session_2_15m_mean' CI [-0.000, 0.000]
+    ⚠  FDR_ADJUSTED: 15/15 tests rejected at q=0.05 after BH correction
+
+  FINDINGS  (sorted by stability)
+
+    [✗ Ignore]  Asian 15m mean return  |  session=Asian
+      Baseline 0.0%  →  Effect -0.0%  (-0.0%)
+      95% CI [-0.0%, 0.0%]  p_perm=0.0000  p_adj=0.0000  d=-0.00  stab=0.50  n=108353
+
+    [✗ Ignore]  Asian 60m mean return  |  session=Asian
+      Baseline 0.0%  →  Effect -0.0%  (-0.0%)
+      95% CI [-0.0%, -0.0%]  p_perm=0.0000  p_adj=0.0000  d=-0.01  stab=0.50  n=108353
+
+    [✗ Ignore]  Asian 4h mean return  |  session=Asian
+      Baseline 0.0%  →  Effect -0.0%  (-0.0%)
+      95% CI [-0.0%, -0.0%]  p_perm=0.0000  p_adj=0.0000  d=-0.01  stab=0.50  n=108353
+
+    [✗ Ignore]  London 15m mean return  |  session=London
+      Baseline 0.0%  →  Effect 0.0%  (+0.0%)
+      95% CI [0.0%, 0.0%]  p_perm=0.0000  p_adj=0.0000  d=0.01  stab=0.50  n=77395
+
+    [✗ Ignore]  London 60m mean return  |  session=London
+      Baseline 0.0%  →  Effect 0.0%  (+0.0%)
+      95% CI [0.0%, 0.0%]  p_perm=0.0000  p_adj=0.0000  d=0.02  stab=0.50  n=77395
+
+    [✗ Ignore]  London 4h mean return  |  session=London
+      Baseline 0.0%  →  Effect 0.0%  (+0.0%)
+      95% CI [0.0%, 0.0%]  p_perm=0.0000  p_adj=0.0000  d=0.02  stab=0.50  n=77395
+
+    [✗ Ignore]  NY 15m mean return  |  session=NY
+      Baseline 0.0%  →  Effect 0.0%  (+0.0%)
+      95% CI [-0.0%, 0.0%]  p_perm=0.0000  p_adj=0.0000  d=0.00  stab=0.50  n=75112
+
+    [✗ Ignore]  NY 60m mean return  |  session=NY
+      Baseline 0.0%  →  Effect 0.0%  (+0.0%)
+      95% CI [0.0%, 0.0%]  p_perm=0.0000  p_adj=0.0000  d=0.01  stab=0.50  n=75067
+
+    [✗ Ignore]  NY 4h mean return  |  session=NY
+      Baseline 0.0%  →  Effect 0.0%  (+0.0%)
+      95% CI [0.0%, 0.0%]  p_perm=0.0000  p_adj=0.0000  d=0.01  stab=0.50  n=74887
+
+  SUMMARY
+  n_observations = 354,568
+  stability_score = 0.50
+  conclusion = negative
+  actionable findings = 0
+  monitor findings = 0

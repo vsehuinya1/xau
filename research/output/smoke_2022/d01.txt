@@ -1,0 +1,46 @@
+======================================================================
+  D01 — Sessions have materially different directional efficiency an
+======================================================================
+  Date range    : 2022-01-02 → 2022-12-30
+  Sample size   : 774
+  Stability     : 0.50 / 1.00
+  Conclusion    : NEGATIVE
+
+  WARNINGS
+    ⚠  CI_CROSSES_ZERO: 'cont_Asian_London' CI [-0.043, 0.081]
+    ⚠  CI_CROSSES_ZERO: 'cont_London_NY' CI [-0.101, 0.019]
+    ⚠  CI_CROSSES_ZERO: 'cont_Asian_NY' CI [-0.050, 0.070]
+    ⚠  FDR_ADJUSTED: 0/4 tests rejected at q=0.05 after BH correction
+
+  FINDINGS  (sorted by stability)
+
+    [✗ Ignore]  Asian→London continuation  |  all Asian sessions
+      Baseline 50.0%  →  Effect 52.3%  (+2.3%)
+      95% CI [45.7%, 58.1%]  p_perm=0.8121  p_adj=0.8121  d=0.07  stab=0.50  n=258
+
+    [✗ Ignore]  Asian→London cont (high DE prior)  |  Asian DE > 0.65
+      Baseline 52.3%  →  Effect 48.0%  (-4.3%)
+      95% CI [34.7%, 57.3%]  p_perm=0.6275  p_adj=1.0000  d=-0.09  stab=0.50  n=75
+
+    [✗ Ignore]  London→NY continuation  |  all London sessions
+      Baseline 50.0%  →  Effect 46.5%  (-3.5%)
+      95% CI [39.9%, 51.9%]  p_perm=0.6360  p_adj=0.6360  d=-0.10  stab=0.50  n=258
+
+    [~ Monitor]  London→NY cont (high DE prior)  |  London DE > 0.65
+      Baseline 46.5%  →  Effect 61.3%  (+14.8%)
+      95% CI [46.8%, 72.6%]  p_perm=0.0070  p_adj=1.0000  d=0.46  stab=0.50  n=62
+
+    [✗ Ignore]  Asian→NY continuation  |  all Asian sessions
+      Baseline 50.0%  →  Effect 51.6%  (+1.6%)
+      95% CI [45.0%, 57.0%]  p_perm=0.6128  p_adj=0.6128  d=0.04  stab=0.50  n=258
+
+    [✗ Ignore]  Asian→NY cont (high DE prior)  |  Asian DE > 0.65
+      Baseline 51.6%  →  Effect 46.7%  (-4.9%)
+      95% CI [34.7%, 57.3%]  p_perm=0.2580  p_adj=1.0000  d=-0.19  stab=0.50  n=75
+
+  SUMMARY
+  n_observations = 774
+  stability_score = 0.50
+  conclusion = negative
+  actionable findings = 0
+  monitor findings = 1
