@@ -37,59 +37,57 @@ class D01SessionPersistence(BaseDiagnostic):
         if ts_pd.tz is not None: ts_pd = ts_pd.tz_convert("UTC").tz_localize(None)
         dates   = ts_pd.normalize().values
 
-        bar_indices = np.where(mask)[0]
-        unique_dates = np.unique(dates[mask])
+        # ── Vectorised per-session-per-day OHLC (replaces double Python loop) ──
+        bar_df = pd.DataFrame({
+            "date":    dates[mask],
+            "session": session[mask].astype(np.int8),
+            "open":    m1.open[mask],
+            "high":    m1.high[mask],
+            "low":     m1.low[mask],
+            "close":   m1.close[mask],
+        })
+        grp = bar_df.groupby(["date", "session"])
+        df = grp.agg(
+            open  = ("open",  "first"),
+            high  = ("high",  "max"),
+            low   = ("low",   "min"),
+            close = ("close", "last"),
+            n     = ("close", "count"),
+        ).reset_index()
+        df = df[df["n"] >= 5].copy()
+        df["range"] = df["high"] - df["low"]
+        df["de"]    = np.where(
+            df["range"] > 0,
+            (df["close"] - df["open"]).abs() / df["range"],
+            np.nan,
+        )
+        df["dir"] = np.sign(df["close"] - df["open"]).astype(int)
 
-        # ── Per-session-per-day statistics
-        rows = []
-        for date in unique_dates:
-            day_mask = dates == date
-            for sess_id in [0, 1, 2]:
-                bmask = day_mask & (session == sess_id) & mask
-                if bmask.sum() < 5:
-                    continue
-                o = m1.open[bmask][0]
-                h = np.max(m1.high[bmask])
-                l = np.min(m1.low[bmask])
-                c = m1.close[bmask][-1]
-                rng = h - l
-                de  = abs(c - o) / rng if rng > 0 else np.nan
-                rows.append({
-                    "date":    date,
-                    "session": sess_id,
-                    "open":    o,
-                    "high":    h,
-                    "low":     l,
-                    "close":   c,
-                    "range":   rng,
-                    "de":      de,
-                    "dir":     int(np.sign(c - o)),
-                })
-
-        df = pd.DataFrame(rows)
         if len(df) < 10:
             return _empty_core()
 
-        # ── Continuation table: prior session dir → current session direction
+        # ── Vectorised continuation table (replaces second Python loop) ─────────
+        # Pivot to wide per-day, then align prior vs current sessions
+        pivot_dir = df.pivot(index="date", columns="session", values="dir")
+        pivot_de  = df.pivot(index="date", columns="session", values="de")
         continuation_rows = []
-        for date in unique_dates:
-            day = df[df["date"] == date].set_index("session")
-            for prior_s, curr_s in _SESSION_PAIRS:
-                if prior_s not in day.index or curr_s not in day.index:
-                    continue
-                prior_dir = day.loc[prior_s, "dir"]
-                curr_dir  = day.loc[curr_s, "dir"]
-                if prior_dir == 0 or curr_dir == 0:
-                    continue
-                continuation_rows.append({
-                    "prior_session": prior_s,
-                    "curr_session":  curr_s,
-                    "prior_dir":     prior_dir,
-                    "curr_dir":      curr_dir,
-                    "continuation":  int(prior_dir == curr_dir),
-                    "prior_de":      day.loc[prior_s, "de"],
-                })
-        cont_df = pd.DataFrame(continuation_rows)
+        for prior_s, curr_s in _SESSION_PAIRS:
+            if prior_s not in pivot_dir.columns or curr_s not in pivot_dir.columns:
+                continue
+            combined = pd.DataFrame({
+                "prior_dir": pivot_dir[prior_s],
+                "curr_dir":  pivot_dir[curr_s],
+                "prior_de":  pivot_de[prior_s],
+            }).dropna()
+            combined = combined[(combined["prior_dir"] != 0) & (combined["curr_dir"] != 0)]
+            combined["continuation"]  = (combined["prior_dir"] == combined["curr_dir"]).astype(int)
+            combined["prior_session"] = prior_s
+            combined["curr_session"]  = curr_s
+            continuation_rows.append(combined.reset_index())
+        cont_df = pd.concat(continuation_rows, ignore_index=True) if continuation_rows else pd.DataFrame()
+
+        bar_indices = np.where(mask)[0]
+
 
         # ── Effect sizes: DE by session + continuation rates
         effect_sizes: dict[str, float] = {}

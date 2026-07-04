@@ -1,0 +1,131 @@
+{
+  "diagnostic_id": "d05",
+  "hypothesis": "Price making a new N-day high or low exhibits measurable forward momentum over subsequent K bars. Effect size and direction compared to random baseline.",
+  "parameters": {},
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 683384,
+  "stability_score": 0.5766887571295514,
+  "conclusion": "negative",
+  "warnings": [
+    "FDR_ADJUSTED: 3/5 tests rejected at q=0.05 after BH correction"
+  ],
+  "effect_sizes": {
+    "new20d_high_60m_mean": 0.0004472709351745995,
+    "new20d_high_4h_mean": 0.0016799415275355293,
+    "new20d_high_1d_mean": 0.0025717340543377643,
+    "new20d_low_60m_mean": 0.00040752905176157886,
+    "new20d_low_4h_mean": 0.001539047680452097
+  },
+  "confidence_intervals": {
+    "new20d_high_60m_mean": [
+      0.00039111982162970036,
+      0.0004992449494849747
+    ],
+    "new20d_high_4h_mean": [
+      0.0015739370025790302,
+      0.001786873822546312
+    ],
+    "new20d_high_1d_mean": [
+      0.002418677313072802,
+      0.002624050395183365
+    ],
+    "new20d_low_60m_mean": [
+      0.0003606662653728596,
+      0.00047659872538810896
+    ],
+    "new20d_low_4h_mean": [
+      0.0014128734034055213,
+      0.0016684875777249748
+    ]
+  },
+  "p_values": {
+    "new20d_high_1d_mean": [
+      0.0,
+      1.0,
+      1.0
+    ],
+    "new20d_low_4h_mean": [
+      0.0,
+      null,
+      0.0
+    ],
+    "new20d_high_60m_mean": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "new20d_low_60m_mean": [
+      0.0,
+      null,
+      0.0
+    ],
+    "new20d_high_4h_mean": [
+      0.0,
+      1.0,
+      1.0
+    ]
+  },
+  "effect_reports": [
+    {
+      "finding": "New 20d high \u2192 60m forward return",
+      "condition": "new_20d_high, all sessions",
+      "baseline": 2.760246570687741e-05,
+      "effect_value": 0.0004472709351745995,
+      "effect_unit": "return_difference",
+      "ci_lower": 0.00039111982162970036,
+      "ci_upper": 0.0004992449494849747,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": 0.21570585638801176,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.5766887571295514,
+      "recommendation": "Ignore",
+      "n_obs": 446443,
+      "n_obs_baseline": 2786886
+    },
+    {
+      "finding": "New 20d high \u2192 4h forward return",
+      "condition": "new_20d_high, all sessions",
+      "baseline": 2.760246570687741e-05,
+      "effect_value": 0.0016799415275355293,
+      "effect_unit": "return_difference",
+      "ci_lower": 0.0015739370025790302,
+      "ci_upper": 0.001786873822546312,
+      "p_perm": 1.0,
+      "p_adj": 1.0,
+      "effect_d": 0.7177986021087807,
+      "practical_min": 0.001,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.5766887571295514,
+      "recommendation": "Monitor",
+      "n_obs": 446443,
+      "n_obs_baseline": 2786886
+    },
+    {
+      "finding": "New 20d high \u2192 1d forward return",
+      "condition": "new_20d_high, all sessions",
+      "baseline": 2.760246570687741e-05,
+      "effect_value": 0.0025717340543377643,
+      "effect_unit": "return_difference",
+      "ci_lower": 0.002418677313072802,
+      "ci_upper": 0.002624050395183365,
+      "p_perm": 1.0,
+      "p_adj": 1.0,
+      "effect_d": 0.9976009677192123,
+      "practical_min": 0.001,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.5766887571295514,
+      "recommendation": "Monitor",
+      "n_obs": 446443,
+      "n_obs_baseline": 2786886
+    }
+  ],
+  "summary": "n_observations = 683,384\nstability_score = 0.58\nconclusion = negative\nactionable findings = 0\nmonitor findings = 2"
+}

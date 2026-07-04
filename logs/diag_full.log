@@ -22,7 +22,7 @@ Loading data 2018–2025 …
   resampling → H4 …
   computing ATR / derived series …
   done — M1=2,786,946  M5=557,918  M15=186,074  H1=46,637  H4=12,749
-  Loaded in 116.9s  M1 bars: 2,786,946
+  Loaded in 105.1s  M1 bars: 2,786,946
 
 Building DataProxy …
   DataProxy: labelling sessions …
@@ -30,33 +30,61 @@ Building DataProxy …
   DataProxy: computing N-day highs/lows …
   DataProxy: computing forward returns …
   DataProxy: ready.
+  DataProxy ready in 11.8s
+
+
+[d11] Running …  hypothesis: Forward return distributions at multiple horizons differ mat
 /Users/MartinOile/Library/Python/3.11/lib/python/site-packages/numpy/lib/_nanfunctions_impl.py:1406: RuntimeWarning: All-NaN slice encountered
   return _nanquantile_unchecked(
-Traceback (most recent call last):
-  File "/Users/MartinOile/Library/Python/3.11/lib/python/site-packages/numpy/_core/fromnumeric.py", line 57, in _wrapfunc
-    return bound(*args, **kwds)
-           ^^^^^^^^^^^^^^^^^^^^
-TypeError: '<' not supported between instances of 'Timestamp' and 'int'
+  [d11] n=2,786,946  stability=0.79  conclusion=negative
+    [✗ Ignore]  Asian 15m mean return  |  session=Asian
+    [✗ Ignore]  Asian 60m mean return  |  session=Asian
+    [✗ Ignore]  Asian 4h mean return  |  session=Asian
+  [d11] done in 82.6s  conclusion=negative  stability=0.79
 
-During handling of the above exception, another exception occurred:
 
-Traceback (most recent call last):
-  File "/Users/MartinOile/Desktop/xau/research/runner.py", line 170, in main
-    bundle = diag.run(data, diag_config)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/MartinOile/Desktop/xau/research/diagnostics/base.py", line 148, in run
-    core      = self._compute_core(data, config, full_mask)
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/MartinOile/Desktop/xau/research/diagnostics/d02_impulse_pullback.py", line 93, in _compute_core
-    m5_to_m1 = np.searchsorted(m1.ts, imp_df["ts"].values, side="right") - 1
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/MartinOile/Library/Python/3.11/lib/python/site-packages/numpy/_core/fromnumeric.py", line 1526, in searchsorted
-    return _wrapfunc(a, 'searchsorted', v, side=side, sorter=sorter)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/MartinOile/Library/Python/3.11/lib/python/site-packages/numpy/_core/fromnumeric.py", line 66, in _wrapfunc
-    return _wrapit(obj, method, *args, **kwds)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/MartinOile/Library/Python/3.11/lib/python/site-packages/numpy/_core/fromnumeric.py", line 46, in _wrapit
-    result = getattr(arr, method)(*args, **kwds)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: '<' not supported between instances of 'Timestamp' and 'int'
+[d01] Running …  hypothesis: Sessions have materially different directional efficiency an
+  [d01] n=6,187  stability=0.77  conclusion=negative
+    [✗ Ignore]  Asian→London continuation  |  all Asian sessions
+    [✗ Ignore]  Asian→London cont (high DE prior)  |  Asian DE > 0.65
+    [✗ Ignore]  London→NY continuation  |  all London sessions
+  [d01] done in 549.4s  conclusion=negative  stability=0.77
+
+
+[d02] Running …  hypothesis: After an N-bar M5 impulse exceeding Y×ATR, pullback depth an
+  [d02] n=13,251  stability=0.79  conclusion=negative
+    [✗ Ignore]  Pullback depth after Asian impulse  |  session=Asian, N=5, ≥1.5×ATR
+    [✗ Ignore]  Pullback depth after London impulse  |  session=London, N=5, ≥1.5×ATR
+    [✗ Ignore]  Pullback depth after NY impulse  |  session=NY, N=5, ≥1.5×ATR
+  [d02] done in 53.0s  conclusion=negative  stability=0.79
+
+
+[d03] Running …  hypothesis: Previous day range (PDR) quintile predicts today's London se
+  [d03] n=2,482  stability=0.77  conclusion=positive
+    [✓ Actionable]  Today range / PDR: compressed (Q1) vs wide (Q5) prior  |  PDR quintile 1 (most compressed)
+  [d03] done in 16.0s  conclusion=positive  stability=0.77
+
+
+[d04] Running …  hypothesis: M1 bar range exhibits strong positive autocorrelation up to 
+  [d04] n=2,786,946  stability=0.59  conclusion=negative
+    [~ Monitor]  London open bar range vs off-hours  |  session=London (07:00-12:00 UTC)
+  [d04] done in 1116.0s  conclusion=negative  stability=0.59
+
+
+[d05] Running …  hypothesis: Price making a new N-day high or low exhibits measurable for
+  [d05] n=683,384  stability=0.58  conclusion=negative
+    [✗ Ignore]  New 20d high → 60m forward return  |  new_20d_high, all sessions
+    [~ Monitor]  New 20d high → 4h forward return  |  new_20d_high, all sessions
+    [~ Monitor]  New 20d high → 1d forward return  |  new_20d_high, all sessions
+  [d05] done in 2398.3s  conclusion=negative  stability=0.58
+
+
+[d06] Running …  hypothesis: M1 FVG fill rates are non-uniform across sessions and ATR co
+  [d06] n=733,616  stability=0.97  conclusion=null
+    [✗ Ignore]  FVG fill rate within 60 bars (Asian)  |  session=Asian
+    [✗ Ignore]  FVG fill rate within 60 bars (London)  |  session=London
+    [✗ Ignore]  FVG fill rate within 60 bars (NY)  |  session=NY
+  [d06] done in 844.5s  conclusion=null  stability=0.97
+
+
+[d07] Running …  hypothesis: M15 range breakouts sustain (no close back below breakout le

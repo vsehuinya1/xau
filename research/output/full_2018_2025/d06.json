@@ -1,0 +1,118 @@
+{
+  "diagnostic_id": "d06",
+  "hypothesis": "M1 FVG fill rates are non-uniform across sessions and ATR contexts. Fill rate, time-to-fill, and conditional fill probability are measurable.",
+  "parameters": {},
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 733616,
+  "stability_score": 0.9706769562281874,
+  "conclusion": "null",
+  "warnings": [],
+  "effect_sizes": {
+    "fill_rate_30": 0.8273688142025256,
+    "fill_rate_60": 0.05211173147804846,
+    "fill_rate_120": 0.036070641861682406,
+    "fill_rate_240": 0.024852238773418245,
+    "fill_rate_1440": 0.03668813112036815,
+    "fill60_Asian": 0.05264450056116723,
+    "fill60_London": 0.05077667396901246,
+    "fill60_NY": 0.05141745599903743
+  },
+  "confidence_intervals": {
+    "fill_rate_30": [
+      0.8186,
+      0.8390282656797579
+    ],
+    "fill_rate_60": [
+      0.0478,
+      0.060300200000000005
+    ],
+    "fill_rate_120": [
+      0.0342,
+      0.039700600000000016
+    ],
+    "fill_rate_240": [
+      0.0228,
+      0.028100200000000006
+    ],
+    "fill_rate_1440": [
+      0.0346,
+      0.04010020000000001
+    ],
+    "fill60_Asian": [
+      0.0498,
+      0.06020240000000008
+    ],
+    "fill60_London": [
+      0.0468,
+      0.05880240000000008
+    ],
+    "fill60_NY": [
+      0.0478,
+      0.05980280000000009
+    ]
+  },
+  "p_values": {},
+  "effect_reports": [
+    {
+      "finding": "FVG fill rate within 60 bars (Asian)",
+      "condition": "session=Asian",
+      "baseline": 0.05211173147804846,
+      "effect_value": 0.05264450056116723,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.0498,
+      "ci_upper": 0.06020240000000008,
+      "p_perm": 1.0,
+      "p_adj": 1.0,
+      "effect_d": 0.003478749140223497,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.9706769562281874,
+      "recommendation": "Ignore",
+      "n_obs": 228096,
+      "n_obs_baseline": 733616
+    },
+    {
+      "finding": "FVG fill rate within 60 bars (London)",
+      "condition": "session=London",
+      "baseline": 0.05211173147804846,
+      "effect_value": 0.05077667396901246,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.0468,
+      "ci_upper": 0.05880240000000008,
+      "p_perm": 1.0,
+      "p_adj": 1.0,
+      "effect_d": -0.007565032627895057,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.9706769562281874,
+      "recommendation": "Ignore",
+      "n_obs": 151093,
+      "n_obs_baseline": 733616
+    },
+    {
+      "finding": "FVG fill rate within 60 bars (NY)",
+      "condition": "session=NY",
+      "baseline": 0.05211173147804846,
+      "effect_value": 0.05141745599903743,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.0478,
+      "ci_upper": 0.05980280000000009,
+      "p_perm": 1.0,
+      "p_adj": 1.0,
+      "effect_d": -0.00392399781865346,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.9706769562281874,
+      "recommendation": "Ignore",
+      "n_obs": 149599,
+      "n_obs_baseline": 733616
+    }
+  ],
+  "summary": "n_observations = 733,616\nstability_score = 0.97\nconclusion = null\nactionable findings = 0\nmonitor findings = 0"
+}

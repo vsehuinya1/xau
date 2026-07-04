@@ -52,15 +52,15 @@
     ]
   },
   "p_values": {
-    "kruskal_range_ratio": [
-      0.2751082394361136,
-      null,
-      0.2751082394361136
-    ],
     "q1_vs_q5_range_ratio": [
       null,
       0.0264,
       0.0528
+    ],
+    "kruskal_range_ratio": [
+      0.2751082394361136,
+      null,
+      0.2751082394361136
     ]
   },
   "effect_reports": [

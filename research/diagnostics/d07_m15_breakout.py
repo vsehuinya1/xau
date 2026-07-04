@@ -73,31 +73,40 @@ class D07M15Breakout(BaseDiagnostic):
         if len(bo_df) < 30:
             return _empty()
 
-        N15 = len(m15.close)
+        # ── Pre-compute expensive arrays ONCE before the per-row loop ──────────
+        N15        = len(m15.close)
+        m15_close  = np.asarray(m15.close)
+        m15_high   = np.asarray(m15.high)
+        m15_low    = np.asarray(m15.low)
+        ts_m1_i64  = ts_as_i64(m1.ts)               # 2.79M → int64, done once
+        ts_bo_i64  = ts_as_i64(bo_df["ts"].values)  # event timestamps → int64
+        # Map each M15 breakout to its nearest M1 session label
+        bo_m1_idx  = np.searchsorted(ts_m1_i64, ts_bo_i64, side="right") - 1
+        bo_m1_idx  = np.clip(bo_m1_idx, 0, len(m1.ts) - 1)
+        bo_session = data.session[bo_m1_idx]         # vectorised session lookup
+
         records = []
-        for _, row in bo_df.iterrows():
+        for k, (_, row) in enumerate(bo_df.iterrows()):
             i    = int(row["bar_idx"])
             dirn = int(row["direction"])
             level = float(row["level"])
-            sess  = int(data.session[
-                np.searchsorted(ts_as_i64(m1.ts), ts_as_i64(np.array([row["ts"]])), side="right")[0] - 1
-            ]) if row["ts"] >= m1.ts[0] else 3
+            sess  = int(bo_session[k])
 
             # Sustained = price does not close back below (bull) / above (bear) level
             sustained = True
             for j in range(i + 1, min(i + _SUSTAIN_BARS + 1, N15)):
-                if dirn == 1 and m15.close[j] < level:
+                if dirn == 1 and m15_close[j] < level:
                     sustained = False; break
-                if dirn == -1 and m15.close[j] > level:
+                if dirn == -1 and m15_close[j] > level:
                     sustained = False; break
 
             # MAE within 10 bars
             scan = slice(i, min(i + 10, N15))
             if dirn == 1:
-                mae = float(m15.close[i] - np.min(m15.low[scan])) / \
+                mae = float(m15_close[i] - np.min(m15_low[scan])) / \
                       (float(row["atr_ref"]) + 1e-9)
             else:
-                mae = float(np.max(m15.high[scan]) - m15.close[i]) / \
+                mae = float(np.max(m15_high[scan]) - m15_close[i]) / \
                       (float(row["atr_ref"]) + 1e-9)
 
             records.append({
