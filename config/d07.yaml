@@ -4,8 +4,8 @@ emit_features: true
 parameters:
   lookback_bars: 10
 statistical:
-  n_bootstrap: 2000
-  n_permutations: 3000
+  n_bootstrap: 500
+  n_permutations: 500
   fdr_method: "bh"
   alpha: 0.05
 subperiods:

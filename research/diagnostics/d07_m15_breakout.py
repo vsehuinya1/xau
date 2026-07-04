@@ -173,25 +173,26 @@ class D07M15Breakout(BaseDiagnostic):
             )
             effect_reports.append(er)
 
-        # Feature table
+        # ── Feature table (vectorised) ─────────────────────────────────────────
         bar_indices = np.where(mask)[0]
         m1_bo_bull  = np.zeros(len(bar_indices), dtype=bool)
         m1_bo_bear  = np.zeros(len(bar_indices), dtype=bool)
-        m1_bo_age   = np.full(len(bar_indices), -1, dtype=np.int16)
+        m1_bo_age   = np.full(len(bar_indices), -1, dtype=np.int32)
 
-        for _, row in bo_df.iterrows():
-            m1_i = int(np.searchsorted(ts_as_i64(m1.ts), ts_as_i64(np.array([row["ts"]])), side="right")[0] - 1)
-            m1_i = np.clip(m1_i, 0, len(m1.ts) - 1)
-            idx  = np.searchsorted(bar_indices, m1_i)
+        # Reuse bo_m1_idx already computed above (vectorised searchsorted)
+        bo_m1_clipped = np.clip(bo_m1_idx, 0, len(m1.ts) - 1)
+        ins           = np.searchsorted(bar_indices, bo_m1_clipped)
+        for ev_k in range(len(bo_m1_clipped)):
+            idx  = int(ins[ev_k])
             end  = min(idx + 60, len(bar_indices))
-            if row["direction"] == 1:
+            m1_i = int(bo_m1_clipped[ev_k])
+            if int(dirn_arr[ev_k]) == 1:
                 m1_bo_bull[idx:end] = True
             else:
                 m1_bo_bear[idx:end] = True
-            for k in range(idx, end):
-                age = bar_indices[k] - m1_i
-                if m1_bo_age[k] < 0 or age < m1_bo_age[k]:
-                    m1_bo_age[k] = np.int16(age)
+            ages = bar_indices[idx:end] - m1_i
+            old  = m1_bo_age[idx:end]
+            m1_bo_age[idx:end] = np.where((old < 0) | (ages < old), ages, old)
 
         ft = pd.DataFrame({
             "bar_idx":    bar_indices,
