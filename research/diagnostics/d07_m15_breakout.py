@@ -73,53 +73,57 @@ class D07M15Breakout(BaseDiagnostic):
         if len(bo_df) < 30:
             return _empty()
 
-        # ── Pre-compute expensive arrays ONCE before the per-row loop ──────────
+        # ── Pre-compute everything ONCE (vectorised, no Python per-row loop) ───
         N15        = len(m15.close)
-        m15_close  = np.asarray(m15.close)
-        m15_high   = np.asarray(m15.high)
-        m15_low    = np.asarray(m15.low)
-        ts_m1_i64  = ts_as_i64(m1.ts)               # 2.79M → int64, done once
-        ts_bo_i64  = ts_as_i64(bo_df["ts"].values)  # event timestamps → int64
-        # Map each M15 breakout to its nearest M1 session label
-        bo_m1_idx  = np.searchsorted(ts_m1_i64, ts_bo_i64, side="right") - 1
-        bo_m1_idx  = np.clip(bo_m1_idx, 0, len(m1.ts) - 1)
-        bo_session = data.session[bo_m1_idx]         # vectorised session lookup
+        m15_close  = np.asarray(m15.close,   dtype=np.float64)
+        m15_high   = np.asarray(m15.high,    dtype=np.float64)
+        m15_low    = np.asarray(m15.low,     dtype=np.float64)
+        ts_m1_i64  = ts_as_i64(m1.ts)
+        ts_bo_i64  = ts_as_i64(bo_df["ts"].values)
+        bo_m1_idx  = np.clip(np.searchsorted(ts_m1_i64, ts_bo_i64, side="right") - 1,
+                             0, len(m1.ts) - 1)
+        bo_session = data.session[bo_m1_idx]
 
-        records = []
-        for k, (_, row) in enumerate(bo_df.iterrows()):
-            i    = int(row["bar_idx"])
-            dirn = int(row["direction"])
-            level = float(row["level"])
-            sess  = int(bo_session[k])
+        bar_idx  = bo_df["bar_idx"].values.astype(np.int64)
+        dirn_arr = bo_df["direction"].values.astype(np.int8)
+        level_arr = bo_df["level"].values.astype(np.float64)
+        atr_ref   = bo_df["atr_ref"].values.astype(np.float64)
+        bar_size  = bo_df["bar_size"].values.astype(np.float64)
+        n_ev      = len(bar_idx)
 
-            # Sustained = price does not close back below (bull) / above (bear) level
-            sustained = True
-            for j in range(i + 1, min(i + _SUSTAIN_BARS + 1, N15)):
-                if dirn == 1 and m15_close[j] < level:
-                    sustained = False; break
-                if dirn == -1 and m15_close[j] > level:
-                    sustained = False; break
+        # Vectorised sustain check: for each breakout look _SUSTAIN_BARS ahead
+        sustained = np.ones(n_ev, dtype=bool)
+        for lag in range(1, _SUSTAIN_BARS + 1):
+            j_arr = np.minimum(bar_idx + lag, N15 - 1)
+            future_close = m15_close[j_arr]
+            bull_fail = (dirn_arr == 1) & (future_close < level_arr)
+            bear_fail = (dirn_arr == -1) & (future_close > level_arr)
+            sustained &= ~(bull_fail | bear_fail)
 
-            # MAE within 10 bars
-            scan = slice(i, min(i + 10, N15))
-            if dirn == 1:
-                mae = float(m15_close[i] - np.min(m15_low[scan])) / \
-                      (float(row["atr_ref"]) + 1e-9)
-            else:
-                mae = float(np.max(m15_high[scan]) - m15_close[i]) / \
-                      (float(row["atr_ref"]) + 1e-9)
+        # Vectorised MAE (worst excursion within 10 bars)
+        mae_arr = np.zeros(n_ev, dtype=np.float64)
+        for lag in range(0, 10):
+            j_arr = np.minimum(bar_idx + lag, N15 - 1)
+            bull_mae = m15_close[bar_idx] - m15_low[j_arr]
+            bear_mae = m15_high[j_arr] - m15_close[bar_idx]
+            mae_arr = np.where(
+                dirn_arr == 1,
+                np.maximum(mae_arr, bull_mae),
+                np.maximum(mae_arr, bear_mae),
+            )
+        mae_arr /= (atr_ref + 1e-9)
 
-            records.append({
-                "bar_idx":   i,
-                "direction": dirn,
-                "session":   sess,
-                "sustained": int(sustained),
-                "mae_atr":   float(mae),
-                "bar_size_atr": float(row["bar_size"]) / (float(row["atr_ref"]) + 1e-9),
-            })
-
-        df = pd.DataFrame(records)
+        df = pd.DataFrame({
+            "bar_idx":      bar_idx,
+            "direction":    dirn_arr,
+            "session":      bo_session,
+            "sustained":    sustained.astype(int),
+            "mae_atr":      mae_arr,
+            "bar_size_atr": bar_size / (atr_ref + 1e-9),
+        })
         n_obs = len(df)
+
+
 
         baseline_sustain = float(df["sustained"].mean())
         effect_sizes: dict[str, float] = {}
