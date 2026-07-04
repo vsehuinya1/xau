@@ -1,0 +1,88 @@
+{
+  "diagnostic_id": "d03",
+  "hypothesis": "Previous day range (PDR) quintile predicts today's London session directional efficiency and range expansion / contraction.",
+  "parameters": {},
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 2482,
+  "stability_score": 0.7660718674314516,
+  "conclusion": "positive",
+  "warnings": [
+    "FDR_ADJUSTED: 0/2 tests rejected at q=0.05 after BH correction"
+  ],
+  "effect_sizes": {
+    "range_ratio_q1": 1.203150163177605,
+    "range_ratio_q5": 1.335117405510446,
+    "london_bull_q0": 0.3794788273615635,
+    "london_bull_q1": 0.3487179487179487,
+    "london_bull_q2": 0.36254980079681276,
+    "london_bull_q3": 0.38200339558573854,
+    "london_bull_q4": 0.35400516795865633
+  },
+  "confidence_intervals": {
+    "range_ratio_q1": [
+      1.1438392758070828,
+      1.2825020205223605
+    ],
+    "range_ratio_q5": [
+      1.2445105412659674,
+      1.444694817536232
+    ],
+    "london_bull_q0": [
+      0.33713355048859933,
+      0.4153094462540717
+    ],
+    "london_bull_q1": [
+      0.30256410256410254,
+      0.3959903632699922
+    ],
+    "london_bull_q2": [
+      0.3187250996015936,
+      0.40239043824701193
+    ],
+    "london_bull_q3": [
+      0.3378607809847199,
+      0.4186282159931662
+    ],
+    "london_bull_q4": [
+      0.3049095607235142,
+      0.3979328165374677
+    ]
+  },
+  "p_values": {
+    "kruskal_range_ratio": [
+      0.2751082394361136,
+      null,
+      0.2751082394361136
+    ],
+    "q1_vs_q5_range_ratio": [
+      null,
+      0.0264,
+      0.0528
+    ]
+  },
+  "effect_reports": [
+    {
+      "finding": "Today range / PDR: compressed (Q1) vs wide (Q5) prior",
+      "condition": "PDR quintile 1 (most compressed)",
+      "baseline": 1.335117405510446,
+      "effect_value": 1.203150163177605,
+      "effect_unit": "probability_difference",
+      "ci_lower": 1.1438392758070828,
+      "ci_upper": 1.2825020205223605,
+      "p_perm": 0.0264,
+      "p_adj": 0.0264,
+      "effect_d": -0.14368975252257277,
+      "practical_min": 0.1,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.7660718674314516,
+      "recommendation": "Actionable",
+      "n_obs": 614,
+      "n_obs_baseline": 387
+    }
+  ],
+  "summary": "n_observations = 2,482\nstability_score = 0.77\nconclusion = positive\nactionable findings = 1\nmonitor findings = 0\n\nActionable findings:\n  Today range / PDR: compressed (Q1) vs wide (Q5) prior: -13.2%"
+}

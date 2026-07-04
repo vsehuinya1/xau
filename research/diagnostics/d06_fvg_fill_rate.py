@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from research.diagnostics.registry import register_diagnostic
 from research.diagnostics.base import BaseDiagnostic, DiagnosticConfig
-from research.utils import bootstrap_proportion_ci, cohen_d
+from research.utils import ts_as_i64, bootstrap_proportion_ci, cohen_d
 from research.reports.effect_report import build_effect_report, EffectReport
 from research.data.cache import disk_cached
 
@@ -19,6 +19,12 @@ def _detect_fvgs(open_, high, low, close, atr, ts, data_fp: str = "") -> pd.Data
     Bearish FVG: bar[i].high < bar[i-2].low  (gap down)
     Cached on disk.
     """
+    open_ = np.asarray(open_)
+    high  = np.asarray(high)
+    low   = np.asarray(low)
+    close = np.asarray(close)
+    atr   = np.asarray(atr)
+    ts    = np.asarray(ts)
     N = len(close)
     records = []
     for i in range(2, N):
@@ -64,9 +70,11 @@ class D06FvgFillRate(BaseDiagnostic):
             return _empty()
 
         # Filter to mask date range
-        m1_ts_min = m1.ts[mask][0]  if mask.sum() > 0 else m1.ts[0]
-        m1_ts_max = m1.ts[mask][-1] if mask.sum() > 0 else m1.ts[-1]
-        fvg_df = fvg_df[(fvg_df["ts"] >= m1_ts_min) & (fvg_df["ts"] <= m1_ts_max)]
+        _ts_m1  = ts_as_i64(m1.ts)
+        _ts_min = _ts_m1[mask][0]  if mask.sum() > 0 else _ts_m1[0]
+        _ts_max = _ts_m1[mask][-1] if mask.sum() > 0 else _ts_m1[-1]
+        _ts_ev  = ts_as_i64(fvg_df["ts"].values)
+        fvg_df  = fvg_df[(_ts_ev >= _ts_min) & (_ts_ev <= _ts_max)]
 
         if len(fvg_df) < 50:
             return _empty()

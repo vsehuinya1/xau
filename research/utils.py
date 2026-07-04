@@ -18,7 +18,26 @@ import pandas as pd
 from scipy.stats import norm as _norm
 
 
+# ── Timestamp normalisation ────────────────────────────────────────────────────
+
+def ts_as_i64(arr) -> np.ndarray:
+    """
+    Convert *any* timestamp-like array to int64 nanoseconds since epoch.
+    Works for tz-aware Timestamps (m1.ts), tz-naive datetime64, and int64
+    cached values. Use this as the single normalisation before np.searchsorted
+    or any cross-array timestamp comparison.
+    """
+    a = np.asarray(arr)
+    if a.dtype == np.int64:
+        return a
+    idx = pd.DatetimeIndex(a.ravel())
+    if idx.tz is not None:
+        idx = idx.tz_convert("UTC").tz_localize(None)
+    return idx.asi8.reshape(a.shape)
+
+
 # ── Bootstrap CI (BCa) ────────────────────────────────────────────────────────
+
 
 def bootstrap_ci(
     data:  np.ndarray,

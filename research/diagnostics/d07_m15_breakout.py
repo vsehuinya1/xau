@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from research.diagnostics.registry import register_diagnostic
 from research.diagnostics.base import BaseDiagnostic, DiagnosticConfig
-from research.utils import bootstrap_proportion_ci, bootstrap_ci, cohen_d, permutation_test
+from research.utils import ts_as_i64, bootstrap_proportion_ci, bootstrap_ci, cohen_d, permutation_test
 from research.reports.effect_report import build_effect_report, EffectReport
 from research.data.cache import disk_cached
 
@@ -15,6 +15,11 @@ _SUSTAIN_BARS  = 5               # bars before re-entry counts as "reversed"
 @disk_cached(fmt="feather")
 def _detect_m15_breakouts(high, low, close, atr, ts, lookback: int,
                            data_fp: str = "") -> pd.DataFrame:
+    high  = np.asarray(high)
+    low   = np.asarray(low)
+    close = np.asarray(close)
+    atr   = np.asarray(atr)
+    ts    = np.asarray(ts)
     N = len(close)
     records = []
     for i in range(lookback + 1, N):
@@ -59,9 +64,11 @@ class D07M15Breakout(BaseDiagnostic):
             return _empty()
 
         # Filter to mask range
-        m1_ts_min = m1.ts[mask][0]  if mask.sum() > 0 else m1.ts[0]
-        m1_ts_max = m1.ts[mask][-1] if mask.sum() > 0 else m1.ts[-1]
-        bo_df = bo_df[(bo_df["ts"] >= m1_ts_min) & (bo_df["ts"] <= m1_ts_max)]
+        _ts_m1  = ts_as_i64(m1.ts)
+        _ts_min = _ts_m1[mask][0]  if mask.sum() > 0 else _ts_m1[0]
+        _ts_max = _ts_m1[mask][-1] if mask.sum() > 0 else _ts_m1[-1]
+        _ts_ev  = ts_as_i64(bo_df["ts"].values)
+        bo_df   = bo_df[(_ts_ev >= _ts_min) & (_ts_ev <= _ts_max)]
 
         if len(bo_df) < 30:
             return _empty()
@@ -73,7 +80,7 @@ class D07M15Breakout(BaseDiagnostic):
             dirn = int(row["direction"])
             level = float(row["level"])
             sess  = int(data.session[
-                np.searchsorted(m1.ts, row["ts"], side="right") - 1
+                np.searchsorted(ts_as_i64(m1.ts), ts_as_i64(np.array([row["ts"]])), side="right")[0] - 1
             ]) if row["ts"] >= m1.ts[0] else 3
 
             # Sustained = price does not close back below (bull) / above (bear) level
@@ -160,7 +167,7 @@ class D07M15Breakout(BaseDiagnostic):
         m1_bo_age   = np.full(len(bar_indices), -1, dtype=np.int16)
 
         for _, row in bo_df.iterrows():
-            m1_i = int(np.searchsorted(m1.ts, row["ts"], side="right") - 1)
+            m1_i = int(np.searchsorted(ts_as_i64(m1.ts), ts_as_i64(np.array([row["ts"]])), side="right")[0] - 1)
             m1_i = np.clip(m1_i, 0, len(m1.ts) - 1)
             idx  = np.searchsorted(bar_indices, m1_i)
             end  = min(idx + 60, len(bar_indices))

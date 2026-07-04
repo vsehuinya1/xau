@@ -1,0 +1,190 @@
+{
+  "diagnostic_id": "d01",
+  "hypothesis": "Sessions have materially different directional efficiency and continuation rates; this is the primary driver of WF instability.",
+  "parameters": {},
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 6187,
+  "stability_score": 0.7731747320647786,
+  "conclusion": "negative",
+  "warnings": [
+    "CI_CROSSES_ZERO: 'cont_Asian_NY' CI [-0.024, 0.019]",
+    "FDR_ADJUSTED: 0/4 tests rejected at q=0.05 after BH correction"
+  ],
+  "effect_sizes": {
+    "de_asian_mean": 0.4506541288996762,
+    "de_london_mean": 0.451508736034565,
+    "de_ny_mean": 0.42759727936487907,
+    "london_vs_asian_d": 0.003339107924889351,
+    "cont_Asian_London": -0.025728155339805825,
+    "cont_London_NY": -0.022815533980582503,
+    "cont_Asian_NY": -0.002673796791443861
+  },
+  "confidence_intervals": {
+    "de_asian_mean": [
+      0.4393433558511941,
+      0.4619773439891651
+    ],
+    "de_london_mean": [
+      0.44105153928827384,
+      0.46234512028956254
+    ],
+    "de_ny_mean": [
+      0.4169416040082726,
+      0.4386710898619912
+    ],
+    "cont_Asian_London": [
+      -0.04757281553398057,
+      -0.003398058252427172
+    ],
+    "cont_London_NY": [
+      -0.04563106796116506,
+      -0.001941747572815511
+    ],
+    "cont_Asian_NY": [
+      -0.024064171122994638,
+      0.018716577540106916
+    ]
+  },
+  "p_values": {
+    "london_vs_asian_de": [
+      0.9143667978214339,
+      0.9132,
+      0.9132
+    ],
+    "cont_London_NY": [
+      0.2274145515630356,
+      null,
+      0.4572646224978658
+    ],
+    "cont_Asian_London": [
+      0.4499233736316315,
+      null,
+      0.599897831508842
+    ],
+    "cont_Asian_NY": [
+      0.2286323112489329,
+      null,
+      0.4572646224978658
+    ]
+  },
+  "effect_reports": [
+    {
+      "finding": "Asian\u2192London continuation",
+      "condition": "all Asian sessions",
+      "baseline": 0.5,
+      "effect_value": 0.4742718446601942,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.4524271844660194,
+      "ci_upper": 0.49660194174757283,
+      "p_perm": 0.4499233736316315,
+      "p_adj": 0.4499233736316315,
+      "effect_d": -0.07284905465138103,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.7731747320647786,
+      "recommendation": "Ignore",
+      "n_obs": 2060,
+      "n_obs_baseline": 2060
+    },
+    {
+      "finding": "Asian\u2192London cont (high DE prior)",
+      "condition": "Asian DE > 0.65",
+      "baseline": 0.4742718446601942,
+      "effect_value": 0.44609665427509293,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.4033457249070632,
+      "ci_upper": 0.48698884758364314,
+      "p_perm": 0.3405,
+      "p_adj": 1.0,
+      "effect_d": -0.054206304314343944,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7731747320647786,
+      "recommendation": "Ignore",
+      "n_obs": 538,
+      "n_obs_baseline": 2060
+    },
+    {
+      "finding": "London\u2192NY continuation",
+      "condition": "all London sessions",
+      "baseline": 0.5,
+      "effect_value": 0.4771844660194175,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.45436893203883494,
+      "ci_upper": 0.4980582524271845,
+      "p_perm": 0.2274145515630356,
+      "p_adj": 0.2274145515630356,
+      "effect_d": -0.06458368307720347,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.7731747320647786,
+      "recommendation": "Ignore",
+      "n_obs": 2060,
+      "n_obs_baseline": 2060
+    },
+    {
+      "finding": "London\u2192NY cont (high DE prior)",
+      "condition": "London DE > 0.65",
+      "baseline": 0.4771844660194175,
+      "effect_value": 0.5009345794392523,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.45794392523364486,
+      "ci_upper": 0.5420560747663551,
+      "p_perm": 0.171,
+      "p_adj": 1.0,
+      "effect_d": 0.07729228246435271,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7731747320647786,
+      "recommendation": "Ignore",
+      "n_obs": 535,
+      "n_obs_baseline": 2060
+    },
+    {
+      "finding": "Asian\u2192NY continuation",
+      "condition": "all Asian sessions",
+      "baseline": 0.5,
+      "effect_value": 0.49732620320855614,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.47593582887700536,
+      "ci_upper": 0.5187165775401069,
+      "p_perm": 0.2286323112489329,
+      "p_adj": 0.2286323112489329,
+      "effect_d": -0.007560908987827696,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7731747320647786,
+      "recommendation": "Ignore",
+      "n_obs": 2057,
+      "n_obs_baseline": 2057
+    },
+    {
+      "finding": "Asian\u2192NY cont (high DE prior)",
+      "condition": "Asian DE > 0.65",
+      "baseline": 0.49732620320855614,
+      "effect_value": 0.5288640595903166,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.4848136516776315,
+      "ci_upper": 0.5679702048417132,
+      "p_perm": 0.2815,
+      "p_adj": 1.0,
+      "effect_d": 0.06165524978232502,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7731747320647786,
+      "recommendation": "Ignore",
+      "n_obs": 537,
+      "n_obs_baseline": 2057
+    }
+  ],
+  "summary": "n_observations = 6,187\nstability_score = 0.77\nconclusion = negative\nactionable findings = 0\nmonitor findings = 0"
+}

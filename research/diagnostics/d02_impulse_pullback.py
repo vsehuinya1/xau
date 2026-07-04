@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from research.diagnostics.registry import register_diagnostic
 from research.diagnostics.base import BaseDiagnostic, DiagnosticConfig
-from research.utils import bootstrap_ci, cohen_d, permutation_test
+from research.utils import ts_as_i64, bootstrap_ci, cohen_d, permutation_test
 from research.reports.effect_report import build_effect_report, EffectReport
 from research.data.cache import disk_cached
 
@@ -21,9 +21,15 @@ def _detect_impulses(
     data_fp: str = "",
 ) -> pd.DataFrame:
     """Detect all N-bar impulses on M5 bars. Cached on disk."""
+    m5_high  = np.asarray(m5_high)
+    m5_low   = np.asarray(m5_low)
+    m5_close = np.asarray(m5_close)
+    m5_atr   = np.asarray(m5_atr)
+    m5_ts    = np.asarray(m5_ts)
+
     N = len(m5_close)
     records = []
-    i = n_bars
+    i = n_bars + 1
     while i < N:
         # Check for a bullish run of n_bars consecutive up closes
         window = m5_close[i - n_bars: i]
@@ -76,15 +82,17 @@ class D02ImpulsePullback(BaseDiagnostic):
             return _empty_core()
 
         # Filter impulses to those within the date mask (match M5 ts to M1 ts range)
-        m1_ts_min = m1.ts[mask][0]  if mask.sum() > 0 else m1.ts[0]
-        m1_ts_max = m1.ts[mask][-1] if mask.sum() > 0 else m1.ts[-1]
-        imp_df = imp_df[(imp_df["ts"] >= m1_ts_min) & (imp_df["ts"] <= m1_ts_max)]
+        _ts_m1 = ts_as_i64(m1.ts)
+        _ts_min = _ts_m1[mask][0]  if mask.sum() > 0 else _ts_m1[0]
+        _ts_max = _ts_m1[mask][-1] if mask.sum() > 0 else _ts_m1[-1]
+        _ts_ev  = ts_as_i64(imp_df["ts"].values)
+        imp_df  = imp_df[(_ts_ev >= _ts_min) & (_ts_ev <= _ts_max)]
 
         if len(imp_df) < 10:
             return _empty_core()
 
         # Map each M5 impulse end to the nearest M1 bar
-        m5_to_m1 = np.searchsorted(m1.ts, imp_df["ts"].values, side="right") - 1
+        m5_to_m1 = np.searchsorted(ts_as_i64(m1.ts), ts_as_i64(imp_df["ts"].values), side="right") - 1
         m5_to_m1 = np.clip(m5_to_m1, 0, len(m1.ts) - 1)
 
         records = []
