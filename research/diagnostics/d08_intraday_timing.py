@@ -18,44 +18,46 @@ class D08IntradayTiming(BaseDiagnostic):
         "surface that is actionable for timing entries."
     )
 
-    def _compute_core(self, data, config: DiagnosticConfig, mask: np.ndarray) -> dict:
+    def _compute_core(self, data, config: DiagnosticConfig, mask: np.ndarray) -\u003e dict:
         m1    = data.ds.m1
         ts_pd = pd.DatetimeIndex(m1.ts)
         if ts_pd.tz is not None: ts_pd = ts_pd.tz_convert("UTC").tz_localize(None)
         dates = ts_pd.normalize().values
 
         bar_indices = np.where(mask)[0]
-        unique_dates = np.unique(dates[mask])
 
-        rows = []
-        for date in unique_dates:
-            day_mask_full = dates == date
-            day_bars_m1   = np.where(day_mask_full & mask)[0]
-            if len(day_bars_m1) < 60:   # need a full trading day
-                continue
+        # ── Vectorised: build bar-level frame and groupby date ──────────────────
+        bar_df = pd.DataFrame({
+            "date":    dates[mask],
+            "high":    m1.high[mask],
+            "low":     m1.low[mask],
+            "hour":    ts_pd.hour[mask].to_numpy(),
+            "weekday": ts_pd.dayofweek[mask].to_numpy(),
+        }, index=bar_indices)
 
-            highs = m1.high[day_bars_m1]
-            lows  = m1.low[day_bars_m1]
-            hours = ts_pd.hour[day_bars_m1].to_numpy()
+        # For each day, find index of max high and min low within that day
+        grp = bar_df.groupby("date")
+        day_stats = pd.DataFrame({
+            "n":          grp["high"].count(),
+            "day_range":  grp["high"].max() - grp["low"].min(),
+            "weekday":    grp["weekday"].first(),
+            "high_idx":   grp["high"].idxmax(),   # bar_index of day high
+            "low_idx":    grp["low"].idxmin(),    # bar_index of day low
+        }).reset_index()
+        day_stats = day_stats[day_stats["n"] >= 60].copy()
 
-            day_high_idx = int(np.argmax(highs))
-            day_low_idx  = int(np.argmin(lows))
-            day_high_hour = int(hours[day_high_idx])
-            day_low_hour  = int(hours[day_low_idx])
+        # Map bar_index → hour using pre-built bar_df
+        day_stats["day_high_hour"] = bar_df.loc[day_stats["high_idx"], "hour"].values
+        day_stats["day_low_hour"]  = bar_df.loc[day_stats["low_idx"],  "hour"].values
+        day_stats["high_before_low"] = (day_stats["high_idx"] < day_stats["low_idx"]).astype(int)
 
-            rows.append({
-                "date":           date,
-                "weekday":        int(ts_pd.dayofweek[day_bars_m1[0]]),
-                "day_high_hour":  day_high_hour,
-                "day_low_hour":   day_low_hour,
-                "high_before_low": int(day_high_idx < day_low_idx),
-                "day_range":      float(np.max(highs) - np.min(lows)),
-            })
-
-        df = pd.DataFrame(rows)
+        df = day_stats[["date", "weekday", "day_high_hour", "day_low_hour",
+                         "high_before_low", "day_range"]].copy()
         n_obs = len(df)
         if n_obs < 30:
             return _empty()
+
+
 
         # ── Distribution of high/low formation hour
         high_hour_dist = df["day_high_hour"].value_counts().sort_index()
