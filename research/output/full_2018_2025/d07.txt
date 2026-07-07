@@ -1,0 +1,31 @@
+======================================================================
+  D07 — M15 range breakouts sustain (no close back below breakout le
+======================================================================
+  Date range    : 2018-01-01 → 2025-12-31
+  Sample size   : 29,213
+  Stability     : 0.83 / 1.00
+  Conclusion    : NEGATIVE
+
+  WARNINGS
+    ⚠  FDR_ADJUSTED: 2/3 tests rejected at q=0.05 after BH correction
+
+  FINDINGS  (sorted by stability)
+
+    [✗ Ignore]  M15 breakout sustainability (Asian)  |  session=Asian, lookback=10 bars
+      Baseline 40.5%  →  Effect 40.2%  (-0.3%)
+      95% CI [38.8%, 41.1%]  p_perm=0.4860  p_adj=0.4860  d=-0.01  stab=0.83  n=9623
+
+    [✗ Ignore]  M15 breakout sustainability (London)  |  session=London, lookback=10 bars
+      Baseline 40.5%  →  Effect 42.3%  (+1.8%)
+      95% CI [41.0%, 43.2%]  p_perm=0.0000  p_adj=0.0000  d=0.05  stab=0.83  n=7280
+
+    [✗ Ignore]  M15 breakout sustainability (NY)  |  session=NY, lookback=10 bars
+      Baseline 40.5%  →  Effect 37.2%  (-3.4%)
+      95% CI [35.9%, 38.7%]  p_perm=0.0000  p_adj=0.0000  d=-0.08  stab=0.83  n=4527
+
+  SUMMARY
+  n_observations = 29,213
+  stability_score = 0.83
+  conclusion = negative
+  actionable findings = 0
+  monitor findings = 0

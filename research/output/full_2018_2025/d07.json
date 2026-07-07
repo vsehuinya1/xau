@@ -1,0 +1,118 @@
+{
+  "diagnostic_id": "d07",
+  "hypothesis": "M15 range breakouts sustain (no close back below breakout level within 5 bars) with probability P that is materially context-dependent.",
+  "parameters": {
+    "lookback_bars": 10
+  },
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 29213,
+  "stability_score": 0.8267043381272998,
+  "conclusion": "negative",
+  "warnings": [
+    "FDR_ADJUSTED: 2/3 tests rejected at q=0.05 after BH correction"
+  ],
+  "effect_sizes": {
+    "sustain_rate_global": 0.405127854037586,
+    "sustain_Asian": 0.4022654057986075,
+    "sustain_London": 0.4232142857142857,
+    "sustain_NY": 0.37154848685663794
+  },
+  "confidence_intervals": {
+    "sustain_rate_global": [
+      0.3898269408747765,
+      0.4154
+    ],
+    "sustain_Asian": [
+      0.3882994,
+      0.4108
+    ],
+    "sustain_London": [
+      0.4099996,
+      0.4324
+    ],
+    "sustain_NY": [
+      0.3589712614894848,
+      0.38685324918367714
+    ]
+  },
+  "p_values": {
+    "sustain_NY": [
+      null,
+      0.0,
+      0.0
+    ],
+    "sustain_Asian": [
+      null,
+      0.486,
+      0.486
+    ],
+    "sustain_London": [
+      null,
+      0.0,
+      0.0
+    ]
+  },
+  "effect_reports": [
+    {
+      "finding": "M15 breakout sustainability (Asian)",
+      "condition": "session=Asian, lookback=10 bars",
+      "baseline": 0.405127854037586,
+      "effect_value": 0.4022654057986075,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.3882994,
+      "ci_upper": 0.4108,
+      "p_perm": 0.486,
+      "p_adj": 0.486,
+      "effect_d": -0.008694813190768685,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.8267043381272998,
+      "recommendation": "Ignore",
+      "n_obs": 9623,
+      "n_obs_baseline": 29213
+    },
+    {
+      "finding": "M15 breakout sustainability (London)",
+      "condition": "session=London, lookback=10 bars",
+      "baseline": 0.405127854037586,
+      "effect_value": 0.4232142857142857,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.4099996,
+      "ci_upper": 0.4324,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": 0.04908017806065971,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.8267043381272998,
+      "recommendation": "Ignore",
+      "n_obs": 7280,
+      "n_obs_baseline": 29213
+    },
+    {
+      "finding": "M15 breakout sustainability (NY)",
+      "condition": "session=NY, lookback=10 bars",
+      "baseline": 0.405127854037586,
+      "effect_value": 0.37154848685663794,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.3589712614894848,
+      "ci_upper": 0.38685324918367714,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": -0.08097698423716648,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.8267043381272998,
+      "recommendation": "Ignore",
+      "n_obs": 4527,
+      "n_obs_baseline": 29213
+    }
+  ],
+  "summary": "n_observations = 29,213\nstability_score = 0.83\nconclusion = negative\nactionable findings = 0\nmonitor findings = 0"
+}

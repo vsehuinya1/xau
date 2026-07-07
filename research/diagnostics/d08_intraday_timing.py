@@ -18,7 +18,7 @@ class D08IntradayTiming(BaseDiagnostic):
         "surface that is actionable for timing entries."
     )
 
-    def _compute_core(self, data, config: DiagnosticConfig, mask: np.ndarray) -\u003e dict:
+    def _compute_core(self, data, config: DiagnosticConfig, mask: np.ndarray) -> dict:
         m1    = data.ds.m1
         ts_pd = pd.DatetimeIndex(m1.ts)
         if ts_pd.tz is not None: ts_pd = ts_pd.tz_convert("UTC").tz_localize(None)
