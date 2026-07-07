@@ -78,7 +78,12 @@ def _load_year(year: int) -> pd.DataFrame:
         dtype={"open": float, "high": float, "low": float,
                "close": float, "volume": float},
     )
-    df["dt"] = pd.to_datetime(df["dt"], format="%Y%m%d %H%M%S", utc=True)
+    # histdata.com timestamps are Eastern Time (ET), NOT UTC.
+    # utc=True would mislabel them, shifting every bar by +4/+5 h and
+    # corrupting all session assignments. Parse as naive ET, then convert.
+    naive = pd.to_datetime(df["dt"], format="%Y%m%d %H%M%S")
+    et    = naive.dt.tz_localize("US/Eastern", ambiguous="NaT", nonexistent="NaT")
+    df["dt"] = et.dt.tz_convert("UTC").dt.tz_localize(None)
     df.set_index("dt", inplace=True)
     df.dropna(inplace=True)
     return df
