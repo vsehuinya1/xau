@@ -1,0 +1,43 @@
+======================================================================
+  D10 — Day-of-week has measurable and stable effects on XAUUSD rang
+======================================================================
+  Date range    : 2018-01-01 → 2025-12-31
+  Sample size   : 2,488
+  Stability     : 0.51 / 1.00
+  Conclusion    : NEGATIVE
+
+  WARNINGS
+    ⚠  CI_CROSSES_ZERO: 'return_Mon' CI [-0.001, 0.001]
+    ⚠  CI_CROSSES_ZERO: 'return_Tue' CI [-0.001, 0.001]
+    ⚠  CI_CROSSES_ZERO: 'return_Wed' CI [-0.000, 0.002]
+    ⚠  CI_CROSSES_ZERO: 'return_Fri' CI [-0.001, 0.001]
+    ⚠  FDR_ADJUSTED: 1/2 tests rejected at q=0.05 after BH correction
+
+  FINDINGS  (sorted by stability)
+
+    [~ Monitor]  Mon daily range  |  weekday=Mon
+      Baseline 2518.5%  →  Effect 2641.4%  (+122.9%)
+      95% CI [2443.0%, 2888.7%]  p_perm=1.0000  p_adj=0.0023  d=0.07  stab=0.51  n=417
+
+    [~ Monitor]  Tue daily range  |  weekday=Tue
+      Baseline 2518.5%  →  Effect 2753.3%  (+234.8%)
+      95% CI [2567.7%, 3071.8%]  p_perm=1.0000  p_adj=0.0023  d=0.13  stab=0.51  n=418
+
+    [~ Monitor]  Wed daily range  |  weekday=Wed
+      Baseline 2518.5%  →  Effect 2788.9%  (+270.4%)
+      95% CI [2623.3%, 3014.9%]  p_perm=1.0000  p_adj=0.0023  d=0.15  stab=0.51  n=418
+
+    [~ Monitor]  Thu daily range  |  weekday=Thu
+      Baseline 2518.5%  →  Effect 2797.0%  (+278.6%)
+      95% CI [2632.3%, 3012.4%]  p_perm=1.0000  p_adj=0.0023  d=0.16  stab=0.51  n=417
+
+    [~ Monitor]  Fri daily range  |  weekday=Fri
+      Baseline 2518.5%  →  Effect 2655.9%  (+137.4%)
+      95% CI [2493.3%, 2897.6%]  p_perm=1.0000  p_adj=0.0023  d=0.08  stab=0.51  n=406
+
+  SUMMARY
+  n_observations = 2,488
+  stability_score = 0.51
+  conclusion = negative
+  actionable findings = 0
+  monitor findings = 5

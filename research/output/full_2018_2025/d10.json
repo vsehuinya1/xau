@@ -1,0 +1,188 @@
+{
+  "diagnostic_id": "d10",
+  "hypothesis": "Day-of-week has measurable and stable effects on XAUUSD range, directional persistence, and session continuation rates.",
+  "parameters": {},
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 2488,
+  "stability_score": 0.511366102604556,
+  "conclusion": "negative",
+  "warnings": [
+    "CI_CROSSES_ZERO: 'return_Mon' CI [-0.001, 0.001]",
+    "CI_CROSSES_ZERO: 'return_Tue' CI [-0.001, 0.001]",
+    "CI_CROSSES_ZERO: 'return_Wed' CI [-0.000, 0.002]",
+    "CI_CROSSES_ZERO: 'return_Fri' CI [-0.001, 0.001]",
+    "FDR_ADJUSTED: 1/2 tests rejected at q=0.05 after BH correction"
+  ],
+  "effect_sizes": {
+    "range_Mon": 26.41410791366905,
+    "return_Mon": 0.00025276570824594427,
+    "trend_rate_Mon": 0.2517985611510791,
+    "range_Tue": 27.532624401913882,
+    "return_Tue": 0.00028290427987467395,
+    "trend_rate_Tue": 0.2822966507177033,
+    "range_Wed": 27.8892870813397,
+    "return_Wed": 0.0007451924233315457,
+    "trend_rate_Wed": 0.291866028708134,
+    "range_Thu": 27.970395683453244,
+    "return_Thu": 0.0010773533654284343,
+    "trend_rate_Thu": 0.34292565947242204,
+    "range_Fri": 26.55928078817734,
+    "return_Fri": 0.0001344424898838886,
+    "trend_rate_Fri": 0.270935960591133
+  },
+  "confidence_intervals": {
+    "range_Mon": [
+      24.430412089736535,
+      28.887347111336837
+    ],
+    "return_Mon": [
+      -0.0006860831273961289,
+      0.0010883283461429096
+    ],
+    "range_Tue": [
+      25.67703408244727,
+      30.718256974712773
+    ],
+    "return_Tue": [
+      -0.0006264306498422924,
+      0.001160007859566025
+    ],
+    "range_Wed": [
+      26.23340010609744,
+      30.14889020636827
+    ],
+    "return_Wed": [
+      -8.473681759827868e-05,
+      0.0015937158401349428
+    ],
+    "range_Thu": [
+      26.32318137892448,
+      30.123754228862705
+    ],
+    "return_Thu": [
+      0.0002915784021017802,
+      0.001906681617761305
+    ],
+    "range_Fri": [
+      24.932641896948272,
+      28.976150178976727
+    ],
+    "return_Fri": [
+      -0.0008286051767126383,
+      0.0009545687013367968
+    ]
+  },
+  "p_values": {
+    "kw_range_by_weekday": [
+      0.0023461886663639483,
+      null,
+      0.004692377332727897
+    ],
+    "kw_return_by_weekday": [
+      0.4283987544431467,
+      null,
+      0.4283987544431467
+    ]
+  },
+  "effect_reports": [
+    {
+      "finding": "Mon daily range",
+      "condition": "weekday=Mon",
+      "baseline": 25.184805868167206,
+      "effect_value": 26.41410791366905,
+      "effect_unit": "return_difference",
+      "ci_lower": 24.430412089736535,
+      "ci_upper": 28.887347111336837,
+      "p_perm": 1.0,
+      "p_adj": 0.0023461886663639483,
+      "effect_d": 0.06855239132415933,
+      "practical_min": 0.001,
+      "is_practical": true,
+      "ci_excl_zero": false,
+      "stability": 0.511366102604556,
+      "recommendation": "Monitor",
+      "n_obs": 417,
+      "n_obs_baseline": 2488
+    },
+    {
+      "finding": "Tue daily range",
+      "condition": "weekday=Tue",
+      "baseline": 25.184805868167206,
+      "effect_value": 27.532624401913882,
+      "effect_unit": "return_difference",
+      "ci_lower": 25.67703408244727,
+      "ci_upper": 30.718256974712773,
+      "p_perm": 1.0,
+      "p_adj": 0.0023461886663639483,
+      "effect_d": 0.13110442737495692,
+      "practical_min": 0.001,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.511366102604556,
+      "recommendation": "Monitor",
+      "n_obs": 418,
+      "n_obs_baseline": 2488
+    },
+    {
+      "finding": "Wed daily range",
+      "condition": "weekday=Wed",
+      "baseline": 25.184805868167206,
+      "effect_value": 27.8892870813397,
+      "effect_unit": "return_difference",
+      "ci_lower": 26.23340010609744,
+      "ci_upper": 30.14889020636827,
+      "p_perm": 1.0,
+      "p_adj": 0.0023461886663639483,
+      "effect_d": 0.15108020135915223,
+      "practical_min": 0.001,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.511366102604556,
+      "recommendation": "Monitor",
+      "n_obs": 418,
+      "n_obs_baseline": 2488
+    },
+    {
+      "finding": "Thu daily range",
+      "condition": "weekday=Thu",
+      "baseline": 25.184805868167206,
+      "effect_value": 27.970395683453244,
+      "effect_unit": "return_difference",
+      "ci_lower": 26.32318137892448,
+      "ci_upper": 30.123754228862705,
+      "p_perm": 1.0,
+      "p_adj": 0.0023461886663639483,
+      "effect_d": 0.15555038868756943,
+      "practical_min": 0.001,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.511366102604556,
+      "recommendation": "Monitor",
+      "n_obs": 417,
+      "n_obs_baseline": 2488
+    },
+    {
+      "finding": "Fri daily range",
+      "condition": "weekday=Fri",
+      "baseline": 25.184805868167206,
+      "effect_value": 26.55928078817734,
+      "effect_unit": "return_difference",
+      "ci_lower": 24.932641896948272,
+      "ci_upper": 28.976150178976727,
+      "p_perm": 1.0,
+      "p_adj": 0.0023461886663639483,
+      "effect_d": 0.07624831050180057,
+      "practical_min": 0.001,
+      "is_practical": true,
+      "ci_excl_zero": false,
+      "stability": 0.511366102604556,
+      "recommendation": "Monitor",
+      "n_obs": 406,
+      "n_obs_baseline": 2488
+    }
+  ],
+  "summary": "n_observations = 2,488\nstability_score = 0.51\nconclusion = negative\nactionable findings = 0\nmonitor findings = 5"
+}

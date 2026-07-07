@@ -1,0 +1,112 @@
+{
+  "diagnostic_id": "d09",
+  "hypothesis": "The Asian session close position [0,1] within the Asian range predicts London session direction with P materially different from 0.50.",
+  "parameters": {},
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 2063,
+  "stability_score": 0.8371072053574129,
+  "conclusion": "positive",
+  "warnings": [
+    "FDR_ADJUSTED: 3/3 tests rejected at q=0.05 after BH correction"
+  ],
+  "effect_sizes": {
+    "day_bull_bull_asian": 0.6855895196506551,
+    "day_bull_bear_asian": 0.3413333333333333,
+    "london_expansion_compressed": 0.9390018484288355,
+    "london_expansion_wide": 0.6865965834428384
+  },
+  "confidence_intervals": {
+    "day_bull_bull_asian": [
+      0.6550218340611353,
+      0.7154654956327449
+    ],
+    "day_bull_bear_asian": [
+      0.30666666666666664,
+      0.3732525663137273
+    ],
+    "london_expansion_compressed": [
+      0.9149722735674677,
+      0.955637707948244
+    ]
+  },
+  "p_values": {
+    "day_bull_bull_asian": [
+      2.4703768011910688e-43,
+      0.0,
+      0.0
+    ],
+    "day_bull_bear_asian": [
+      2.4703768011910688e-43,
+      0.0,
+      0.0
+    ],
+    "london_expansion_comp_vs_wide": [
+      null,
+      0.0,
+      0.0
+    ]
+  },
+  "effect_reports": [
+    {
+      "finding": "Day bullish rate (Asian bull close)",
+      "condition": "Asian close position > 0.6",
+      "baseline": 0.5293262239457102,
+      "effect_value": 0.6855895196506551,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.6550218340611353,
+      "ci_upper": 0.7154654956327449,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": 0.5862176803379872,
+      "practical_min": 0.1,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.8371072053574129,
+      "recommendation": "Actionable",
+      "n_obs": 916,
+      "n_obs_baseline": 2063
+    },
+    {
+      "finding": "Day bullish rate (Asian bear close)",
+      "condition": "Asian close position < 0.4",
+      "baseline": 0.5293262239457102,
+      "effect_value": 0.3413333333333333,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.30666666666666664,
+      "ci_upper": 0.3732525663137273,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": -0.6170104244617158,
+      "practical_min": 0.1,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.8371072053574129,
+      "recommendation": "Actionable",
+      "n_obs": 750,
+      "n_obs_baseline": 2063
+    },
+    {
+      "finding": "London expansive day rate (Asian compressed)",
+      "condition": "Asian range < 25th percentile",
+      "baseline": 0.6865965834428384,
+      "effect_value": 0.9390018484288355,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.9149722735674677,
+      "ci_upper": 0.955637707948244,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": 0.6051968839266564,
+      "practical_min": 0.1,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.8371072053574129,
+      "recommendation": "Actionable",
+      "n_obs": 541,
+      "n_obs_baseline": 1522
+    }
+  ],
+  "summary": "n_observations = 2,063\nstability_score = 0.84\nconclusion = positive\nactionable findings = 3\nmonitor findings = 0\n\nActionable findings:\n  Day bullish rate (Asian bull close): +15.6%\n  Day bullish rate (Asian bear close): -18.8%\n  London expansive day rate (Asian compressed): +25.2%"
+}

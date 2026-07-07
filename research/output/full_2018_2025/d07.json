@@ -39,17 +39,17 @@
     ]
   },
   "p_values": {
-    "sustain_NY": [
-      null,
-      0.0,
-      0.0
-    ],
     "sustain_Asian": [
       null,
       0.486,
       0.486
     ],
     "sustain_London": [
+      null,
+      0.0,
+      0.0
+    ],
+    "sustain_NY": [
       null,
       0.0,
       0.0

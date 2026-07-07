@@ -1,0 +1,95 @@
+{
+  "diagnostic_id": "d08",
+  "hypothesis": "The daily high and low form at non-uniform UTC hours. P(daily extreme not yet formed | current hour) gives a session-based reversal probability surface that is actionable for timing entries.",
+  "parameters": {},
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 2489,
+  "stability_score": 0.7428517431059876,
+  "conclusion": "negative",
+  "warnings": [],
+  "effect_sizes": {
+    "london_high_rate": 0.2820409803133789,
+    "london_low_rate": 0.2989152269987947,
+    "ny_high_rate": 0.1181197267979108,
+    "ny_low_rate": 0.11128967456809964,
+    "asian_high_rate": 0.27159501807955
+  },
+  "confidence_intervals": {
+    "london_high_rate": [
+      0.26436319807151465,
+      0.2995945395609515
+    ],
+    "london_low_rate": [
+      0.2812374447569305,
+      0.3159224761343576
+    ],
+    "ny_high_rate": [
+      0.10606669345118522,
+      0.13218159903575732
+    ]
+  },
+  "p_values": {},
+  "effect_reports": [
+    {
+      "finding": "Day high forms in London session",
+      "condition": "07:00-12:00 UTC",
+      "baseline": 0.20833333333333334,
+      "effect_value": 0.2820409803133789,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.26436319807151465,
+      "ci_upper": 0.2995945395609515,
+      "p_perm": 1.0,
+      "p_adj": 1.0,
+      "effect_d": 0.18149387989297433,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.7428517431059876,
+      "recommendation": "Ignore",
+      "n_obs": 702,
+      "n_obs_baseline": 2489
+    },
+    {
+      "finding": "Day low forms in London session",
+      "condition": "07:00-12:00 UTC",
+      "baseline": 0.20833333333333334,
+      "effect_value": 0.2989152269987947,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.2812374447569305,
+      "ci_upper": 0.3159224761343576,
+      "p_perm": 1.0,
+      "p_adj": 1.0,
+      "effect_d": 0.22304414810376652,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.7428517431059876,
+      "recommendation": "Ignore",
+      "n_obs": 744,
+      "n_obs_baseline": 2489
+    },
+    {
+      "finding": "Day high forms in NY session",
+      "condition": "12:00-17:00 UTC",
+      "baseline": 0.20833333333333334,
+      "effect_value": 0.1181197267979108,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.10606669345118522,
+      "ci_upper": 0.13218159903575732,
+      "p_perm": 1.0,
+      "p_adj": 1.0,
+      "effect_d": -0.22213729701186438,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.7428517431059876,
+      "recommendation": "Ignore",
+      "n_obs": 294,
+      "n_obs_baseline": 2489
+    }
+  ],
+  "summary": "n_observations = 2,489\nstability_score = 0.74\nconclusion = negative\nactionable findings = 0\nmonitor findings = 0"
+}

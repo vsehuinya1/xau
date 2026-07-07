@@ -1,0 +1,28 @@
+======================================================================
+  D08 — The daily high and low form at non-uniform UTC hours. P(dail
+======================================================================
+  Date range    : 2018-01-01 → 2025-12-31
+  Sample size   : 2,489
+  Stability     : 0.74 / 1.00
+  Conclusion    : NEGATIVE
+
+  FINDINGS  (sorted by stability)
+
+    [✗ Ignore]  Day high forms in London session  |  07:00-12:00 UTC
+      Baseline 20.8%  →  Effect 28.2%  (+7.4%)
+      95% CI [26.4%, 30.0%]  p_perm=1.0000  p_adj=1.0000  d=0.18  stab=0.74  n=702
+
+    [✗ Ignore]  Day low forms in London session  |  07:00-12:00 UTC
+      Baseline 20.8%  →  Effect 29.9%  (+9.1%)
+      95% CI [28.1%, 31.6%]  p_perm=1.0000  p_adj=1.0000  d=0.22  stab=0.74  n=744
+
+    [✗ Ignore]  Day high forms in NY session  |  12:00-17:00 UTC
+      Baseline 20.8%  →  Effect 11.8%  (-9.0%)
+      95% CI [10.6%, 13.2%]  p_perm=1.0000  p_adj=1.0000  d=-0.22  stab=0.74  n=294
+
+  SUMMARY
+  n_observations = 2,489
+  stability_score = 0.74
+  conclusion = negative
+  actionable findings = 0
+  monitor findings = 0

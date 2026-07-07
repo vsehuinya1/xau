@@ -1,13 +1,86 @@
-Traceback (most recent call last):
-  File "/Users/MartinOile/Desktop/xau/research/runner.py", line 44, in <module>
-    import research  # noqa: F401 — side-effect import
-    ^^^^^^^^^^^^^^^
-  File "/Users/MartinOile/Desktop/xau/research/__init__.py", line 18, in <module>
-    _im(_mod)
-  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/MartinOile/Desktop/xau/research/diagnostics/d08_intraday_timing.py", line 21
-    def _compute_core(self, data, config: DiagnosticConfig, mask: np.ndarray) -\u003e dict:
-                                                                              ^
-SyntaxError: expected ':'
+
+============================================================
+  XAUUSD Market Diagnostics Framework
+  Run ID : full_2018_2025
+  Period : 2018–2025
+  Diagnostics: ['d07', 'd08', 'd09', 'd10']
+============================================================
+
+Loading data 2018–2025 …
+  loading 2018 …
+  loading 2019 …
+  loading 2020 …
+  loading 2021 …
+  loading 2022 …
+  loading 2023 …
+  loading 2024 …
+  loading 2025 …
+  M1 bars loaded: 2,786,946
+  resampling → M5 …
+  resampling → M15 …
+  resampling → H1 …
+  resampling → H4 …
+  computing ATR / derived series …
+  done — M1=2,786,946  M5=557,918  M15=186,074  H1=46,637  H4=12,749
+  Loaded in 113.5s  M1 bars: 2,786,946
+
+Building DataProxy …
+  DataProxy: labelling sessions …
+  DataProxy: building daily frame …
+  DataProxy: computing N-day highs/lows …
+  DataProxy: computing forward returns …
+  DataProxy: ready.
+  DataProxy ready in 16.6s
+
+
+[d07] Running …  hypothesis: M15 range breakouts sustain (no close back below breakout le
+  [d07] n=29,213  stability=0.83  conclusion=negative
+    [✗ Ignore]  M15 breakout sustainability (Asian)  |  session=Asian, lookback=10 bars
+    [✗ Ignore]  M15 breakout sustainability (London)  |  session=London, lookback=10 bars
+    [✗ Ignore]  M15 breakout sustainability (NY)  |  session=NY, lookback=10 bars
+  [d07] done in 42.5s  conclusion=negative  stability=0.83
+
+
+[d08] Running …  hypothesis: The daily high and low form at non-uniform UTC hours. P(dail
+  [d08] n=2,489  stability=0.74  conclusion=negative
+    [✗ Ignore]  Day high forms in London session  |  07:00-12:00 UTC
+    [✗ Ignore]  Day low forms in London session  |  07:00-12:00 UTC
+    [✗ Ignore]  Day high forms in NY session  |  12:00-17:00 UTC
+  [d08] done in 30.7s  conclusion=negative  stability=0.74
+
+
+[d09] Running …  hypothesis: The Asian session close position [0,1] within the Asian rang
+  [d09] n=2,063  stability=0.84  conclusion=positive
+    [✓ Actionable]  Day bullish rate (Asian bull close)  |  Asian close position > 0.6
+    [✓ Actionable]  Day bullish rate (Asian bear close)  |  Asian close position < 0.4
+    [✓ Actionable]  London expansive day rate (Asian compressed)  |  Asian range < 25th percentile
+  [d09] done in 15.2s  conclusion=positive  stability=0.84
+
+
+[d10] Running …  hypothesis: Day-of-week has measurable and stable effects on XAUUSD rang
+  [d10] n=2,488  stability=0.51  conclusion=negative
+    [~ Monitor]  Mon daily range  |  weekday=Mon
+    [~ Monitor]  Tue daily range  |  weekday=Tue
+    [~ Monitor]  Wed daily range  |  weekday=Wed
+  [d10] done in 12.0s  conclusion=negative  stability=0.51
+
+Building feature table …
+  [features] Saved feature table → /Users/MartinOile/Desktop/xau/research/features/store/xauusd.parquet  (2,786,946 rows × 5 cols)
+
+============================================================
+  Run complete in 103.4s
+  Diagnostics run : 4
+  Findings CSV    : /Users/MartinOile/Desktop/xau/research/output/full_2018_2025/findings.csv
+  Negative log    : /Users/MartinOile/Desktop/xau/research/output/full_2018_2025/negative_findings.md
+  Output dir      : research/output/full_2018_2025/
+============================================================
+
+  TOP ACTIONABLE FINDINGS (by stability):
+
+  [d09] Day bullish rate (Asian bear close)
+    Asian close position < 0.4  →  -18.8%  stab=0.84  p=0.0000
+  [d09] Day bullish rate (Asian bull close)
+    Asian close position > 0.6  →  +15.6%  stab=0.84  p=0.0000
+  [d09] London expansive day rate (Asian compressed)
+    Asian range < 25th percentile  →  +25.2%  stab=0.84  p=0.0000
+

@@ -1,0 +1,36 @@
+======================================================================
+  D09 — The Asian session close position [0,1] within the Asian rang
+======================================================================
+  Date range    : 2018-01-01 → 2025-12-31
+  Sample size   : 2,063
+  Stability     : 0.84 / 1.00
+  Conclusion    : POSITIVE
+
+  WARNINGS
+    ⚠  FDR_ADJUSTED: 3/3 tests rejected at q=0.05 after BH correction
+
+  FINDINGS  (sorted by stability)
+
+    [✓ Actionable]  Day bullish rate (Asian bull close)  |  Asian close position > 0.6
+      Baseline 52.9%  →  Effect 68.6%  (+15.6%)
+      95% CI [65.5%, 71.5%]  p_perm=0.0000  p_adj=0.0000  d=0.59  stab=0.84  n=916
+
+    [✓ Actionable]  Day bullish rate (Asian bear close)  |  Asian close position < 0.4
+      Baseline 52.9%  →  Effect 34.1%  (-18.8%)
+      95% CI [30.7%, 37.3%]  p_perm=0.0000  p_adj=0.0000  d=-0.62  stab=0.84  n=750
+
+    [✓ Actionable]  London expansive day rate (Asian compressed)  |  Asian range < 25th percentile
+      Baseline 68.7%  →  Effect 93.9%  (+25.2%)
+      95% CI [91.5%, 95.6%]  p_perm=0.0000  p_adj=0.0000  d=0.61  stab=0.84  n=541
+
+  SUMMARY
+  n_observations = 2,063
+  stability_score = 0.84
+  conclusion = positive
+  actionable findings = 3
+  monitor findings = 0
+  
+  Actionable findings:
+    Day bullish rate (Asian bull close): +15.6%
+    Day bullish rate (Asian bear close): -18.8%
+    London expansive day rate (Asian compressed): +25.2%
