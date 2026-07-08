@@ -1,0 +1,62 @@
+{
+  "diagnostic_id": "d04",
+  "hypothesis": "M1 bar range exhibits strong positive autocorrelation up to 60 bars (1 hour); vol spikes persist for measurable periods. This enables vol-regime filtering for all downstream strategies.",
+  "parameters": {},
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 2786946,
+  "stability_score": 0.5906108777214356,
+  "conclusion": "negative",
+  "warnings": [],
+  "effect_sizes": {
+    "acf_lag1": 0.7314835590539985,
+    "acf_mean_1_10": 0.6614034865849379,
+    "london_vs_off_mean_br": 0.09832555735900445,
+    "spike_rate": 0.04331013230970388
+  },
+  "confidence_intervals": {
+    "london_mean_br": [
+      0.5783467182000005,
+      0.5982718529036467
+    ],
+    "off_mean_br": [
+      0.4799147304000014,
+      0.5023176485894998
+    ],
+    "acf_lag1": [
+      0.7114835590539985,
+      0.7514835590539986
+    ]
+  },
+  "p_values": {
+    "london_vs_off": [
+      null,
+      0.0,
+      0.0
+    ]
+  },
+  "effect_reports": [
+    {
+      "finding": "London open bar range vs off-hours",
+      "condition": "session=London (07:00-12:00 UTC)",
+      "baseline": 0.4942571208245488,
+      "effect_value": 0.5925826781835533,
+      "effect_unit": "return_difference",
+      "ci_lower": 0.5783467182000005,
+      "ci_upper": 0.5982718529036467,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": 0.16111041537300033,
+      "practical_min": 0.001,
+      "is_practical": true,
+      "ci_excl_zero": true,
+      "stability": 0.5906108777214356,
+      "recommendation": "Monitor",
+      "n_obs": 610929,
+      "n_obs_baseline": 1574291
+    }
+  ],
+  "summary": "n_observations = 2,786,946\nstability_score = 0.59\nconclusion = negative\nactionable findings = 0\nmonitor findings = 1"
+}

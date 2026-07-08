@@ -19,36 +19,48 @@ def _detect_fvgs(open_, high, low, close, atr, ts, data_fp: str = "") -> pd.Data
     Bearish FVG: bar[i].high < bar[i-2].low  (gap down)
     Cached on disk.
     """
-    open_ = np.asarray(open_)
-    high  = np.asarray(high)
-    low   = np.asarray(low)
-    close = np.asarray(close)
-    atr   = np.asarray(atr)
+    high  = np.asarray(high,  dtype=np.float64)
+    low   = np.asarray(low,   dtype=np.float64)
+    atr   = np.asarray(atr,   dtype=np.float64)
     ts    = np.asarray(ts)
-    N = len(close)
-    records = []
-    for i in range(2, N):
-        if low[i] > high[i - 2]:        # bullish gap
-            records.append({
-                "bar_idx":   i,
-                "ts":        ts[i],
-                "direction": 1,
-                "gap_top":   float(low[i]),
-                "gap_bot":   float(high[i - 2]),
-                "gap_size":  float(low[i] - high[i - 2]),
-                "atr_ref":   float(atr[i]),
-            })
-        elif high[i] < low[i - 2]:      # bearish gap
-            records.append({
-                "bar_idx":   i,
-                "ts":        ts[i],
-                "direction": -1,
-                "gap_top":   float(low[i - 2]),
-                "gap_bot":   float(high[i]),
-                "gap_size":  float(low[i - 2] - high[i]),
-                "atr_ref":   float(atr[i]),
-            })
-    return pd.DataFrame(records)
+    N     = len(high)
+
+    # ── Vectorised: shift comparisons instead of Python for-loop ────────────
+    # bar indices 2..N-1 (i), compare low[i] vs high[i-2] and high[i] vs low[i-2]
+    idx      = np.arange(2, N)
+    bull     = low[2:]  > high[:-2]   # bullish FVG mask
+    bear     = high[2:] < low[:-2]    # bearish FVG mask
+
+    bull_idx = idx[bull]
+    bear_idx = idx[bear]
+
+    parts = []
+    if len(bull_idx):
+        parts.append(pd.DataFrame({
+            "bar_idx":   bull_idx,
+            "ts":        ts[bull_idx],
+            "direction": np.ones(len(bull_idx), dtype=np.int8),
+            "gap_top":   low[bull_idx],
+            "gap_bot":   high[bull_idx - 2],
+            "gap_size":  low[bull_idx] - high[bull_idx - 2],
+            "atr_ref":   atr[bull_idx],
+        }))
+    if len(bear_idx):
+        parts.append(pd.DataFrame({
+            "bar_idx":   bear_idx,
+            "ts":        ts[bear_idx],
+            "direction": np.full(len(bear_idx), -1, dtype=np.int8),
+            "gap_top":   low[bear_idx - 2],
+            "gap_bot":   high[bear_idx],
+            "gap_size":  low[bear_idx - 2] - high[bear_idx],
+            "atr_ref":   atr[bear_idx],
+        }))
+
+    if not parts:
+        return pd.DataFrame(columns=["bar_idx","ts","direction","gap_top","gap_bot","gap_size","atr_ref"])
+    return pd.concat(parts, ignore_index=True).sort_values("bar_idx").reset_index(drop=True)
+
+
 
 
 @register_diagnostic

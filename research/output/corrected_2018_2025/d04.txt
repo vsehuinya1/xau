@@ -1,0 +1,20 @@
+======================================================================
+  D04 — M1 bar range exhibits strong positive autocorrelation up to 
+======================================================================
+  Date range    : 2018-01-01 → 2025-12-31
+  Sample size   : 2,786,946
+  Stability     : 0.59 / 1.00
+  Conclusion    : NEGATIVE
+
+  FINDINGS  (sorted by stability)
+
+    [~ Monitor]  London open bar range vs off-hours  |  session=London (07:00-12:00 UTC)
+      Baseline 49.4%  →  Effect 59.3%  (+9.8%)
+      95% CI [57.8%, 59.8%]  p_perm=0.0000  p_adj=0.0000  d=0.16  stab=0.59  n=610929
+
+  SUMMARY
+  n_observations = 2,786,946
+  stability_score = 0.59
+  conclusion = negative
+  actionable findings = 0
+  monitor findings = 1
