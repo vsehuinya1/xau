@@ -172,25 +172,25 @@ class D06FvgFillRate(BaseDiagnostic):
             )
             effect_reports.append(er)
 
-        # Feature table: active FVG flags per bar
+        # Feature table: active FVG flags per bar — vectorised difference array
         bar_indices = np.where(mask)[0]
-        bull_fvgs   = fvg_df[fvg_df["direction"] == 1]
-        bear_fvgs   = fvg_df[fvg_df["direction"] == -1]
-        fvg_active_bull = np.zeros(len(bar_indices), dtype=bool)
-        fvg_active_bear = np.zeros(len(bar_indices), dtype=bool)
-        # Simple window: FVG active if bar_idx within 60 bars of formation
-        for _, fvg in bull_fvgs.iterrows():
-            lo_i = int(fvg["bar_idx"])
-            hi_i = lo_i + 60
-            start = np.searchsorted(bar_indices, lo_i)
-            end   = np.searchsorted(bar_indices, hi_i)
-            fvg_active_bull[start:end] = True
-        for _, fvg in bear_fvgs.iterrows():
-            lo_i = int(fvg["bar_idx"])
-            hi_i = lo_i + 60
-            start = np.searchsorted(bar_indices, lo_i)
-            end   = np.searchsorted(bar_indices, hi_i)
-            fvg_active_bear[start:end] = True
+        bull_idx_arr = fvg_df.loc[fvg_df["direction"] == 1,  "bar_idx"].values.astype(np.int64)
+        bear_idx_arr = fvg_df.loc[fvg_df["direction"] == -1, "bar_idx"].values.astype(np.int64)
+        n_bi = len(bar_indices)
+
+        def _active_flags(event_bar_idx: np.ndarray, window: int = 60) -> np.ndarray:
+            if len(event_bar_idx) == 0:
+                return np.zeros(n_bi, dtype=bool)
+            starts = np.searchsorted(bar_indices, event_bar_idx,           side="left")
+            ends   = np.searchsorted(bar_indices, event_bar_idx + window,  side="left")
+            delta  = np.zeros(n_bi + 1, dtype=np.int32)
+            np.add.at(delta, starts,                         1)
+            np.add.at(delta, np.minimum(ends, n_bi),        -1)
+            return np.cumsum(delta)[:n_bi] > 0
+
+        fvg_active_bull = _active_flags(bull_idx_arr)
+        fvg_active_bear = _active_flags(bear_idx_arr)
+
 
         ft = pd.DataFrame({
             "bar_idx":        bar_indices,
