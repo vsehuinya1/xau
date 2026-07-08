@@ -147,12 +147,17 @@ def permutation_test(
     n_permutations: int  = 10_000,
     alternative:    str  = "two-sided",
     seed:           int  = 42,
+    pool_cap:       int  = 5_000,
 ) -> PermutationResult:
     """
     Label-shuffle permutation test for difference of statistics.
 
     H0: group_a and group_b are drawn from the same distribution.
     T  = statistic(group_a) − statistic(group_b)
+
+    For large arrays (len(a)+len(b) > pool_cap), subsamples proportionally
+    from each group before permuting.  By CLT the p-value converges at
+    pool_cap ≥ 5 000 — identical to bootstrap_ci's pool strategy.
     """
     a = np.asarray(group_a, dtype=float)
     b = np.asarray(group_b, dtype=float)
@@ -162,15 +167,26 @@ def permutation_test(
     if len(a) < 2 or len(b) < 2:
         return PermutationResult(np.nan, 1.0, np.array([]), n_permutations, alternative)
 
-    rng      = np.random.default_rng(seed)
-    combined = np.concatenate([a, b])
-    n_a      = len(a)
-    T_obs    = statistic(a) - statistic(b)
+    rng   = np.random.default_rng(seed)
+    T_obs = statistic(a) - statistic(b)   # computed on full arrays for accuracy
+
+    # ── Pool cap: subsample proportionally for the null distribution ─────────
+    total = len(a) + len(b)
+    if total > pool_cap:
+        n_a_sub = max(2, int(round(pool_cap * len(a) / total)))
+        n_b_sub = max(2, pool_cap - n_a_sub)
+        a_perm  = a[rng.choice(len(a), size=min(n_a_sub, len(a)), replace=False)]
+        b_perm  = b[rng.choice(len(b), size=min(n_b_sub, len(b)), replace=False)]
+    else:
+        a_perm, b_perm = a, b
+
+    combined = np.concatenate([a_perm, b_perm])
+    n_a_p    = len(a_perm)
 
     null = np.empty(n_permutations)
     for i in range(n_permutations):
         perm    = rng.permutation(combined)
-        null[i] = statistic(perm[:n_a]) - statistic(perm[n_a:])
+        null[i] = statistic(perm[:n_a_p]) - statistic(perm[n_a_p:])
 
     if alternative == "two-sided":
         p = float(np.mean(np.abs(null) >= np.abs(T_obs)))
@@ -180,6 +196,8 @@ def permutation_test(
         p = float(np.mean(null <= T_obs))
 
     return PermutationResult(T_obs, p, null, n_permutations, alternative)
+
+
 
 
 # ── FDR Correction ────────────────────────────────────────────────────────────
