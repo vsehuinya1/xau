@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from research.diagnostics.registry import register_diagnostic
 from research.diagnostics.base import BaseDiagnostic, DiagnosticConfig
-from research.utils import bootstrap_ci, permutation_test
+from research.utils import bootstrap_ci, permutation_test, ts_as_i64
 from research.reports.effect_report import build_effect_report, EffectReport
 
 _ACF_LAGS      = 60    # M1 bars (= 1 hour)
@@ -83,7 +83,7 @@ class D04VolClustering(BaseDiagnostic):
         # ── ATR-pct tercile for feature table
         atr_pct   = data.ds.m15.atr_pct
         m1_to_m15 = np.clip(
-            np.searchsorted(data.ds.m15.ts, data.ds.m1.ts[mask], side="right") - 1,
+            np.searchsorted(ts_as_i64(data.ds.m15.ts), ts_as_i64(data.ds.m1.ts[mask]), side="right") - 1,
             0, len(atr_pct) - 1,
         )
         atr_pct_m1 = atr_pct[m1_to_m15]

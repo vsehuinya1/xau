@@ -1,0 +1,357 @@
+{
+  "diagnostic_id": "d11",
+  "hypothesis": "Forward return distributions at multiple horizons differ materially across regimes (session \u00d7 weekday \u00d7 ATR-pct tercile \u00d7 prior direction). No thresholds. This is the universal prior for all future research.",
+  "parameters": {},
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 2786946,
+  "stability_score": 0.7849158911113876,
+  "conclusion": "negative",
+  "warnings": [
+    "CI_CROSSES_ZERO: 'session_0_15m_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'session_0_60m_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'session_1_15m_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'session_1_60m_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'session_1_4h_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'london_atr_terc0_60m_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'session_2_15m_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'session_2_60m_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'session_2_4h_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'weekday_0_60m_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'weekday_2_60m_mean' CI [-0.000, 0.000]",
+    "CI_CROSSES_ZERO: 'weekday_3_60m_mean' CI [-0.000, 0.000]",
+    "FDR_ADJUSTED: 15/15 tests rejected at q=0.05 after BH correction"
+  ],
+  "effect_sizes": {
+    "session_0_15m_mean": -0.001328851549046449,
+    "session_0_60m_mean": -0.0008177665211797838,
+    "session_0_4h_mean": -0.0053558556827529875,
+    "session_1_15m_mean": -0.0014528357457628818,
+    "session_1_60m_mean": -0.0058060017498019895,
+    "session_1_4h_mean": -0.02097650683082704,
+    "london_atr_terc0_60m_mean": -0.0058060017498019895,
+    "session_2_15m_mean": -0.005148255842573262,
+    "session_2_60m_mean": -0.011803137894677957,
+    "session_2_4h_mean": -0.019105561343118672,
+    "weekday_0_60m_mean": -0.006043881536341245,
+    "weekday_1_60m_mean": -0.002526674654191919,
+    "weekday_2_60m_mean": 0.0032002866315174803,
+    "weekday_3_60m_mean": 0.004450237968306835,
+    "weekday_4_60m_mean": 0.007370784810007944
+  },
+  "confidence_intervals": {
+    "session_0_15m_mean": [
+      -4.973709685181839e-06,
+      2.605704966461406e-05
+    ],
+    "session_0_60m_mean": [
+      -3.160015379365468e-05,
+      4.608813347693542e-05
+    ],
+    "session_0_4h_mean": [
+      2.98297272463319e-06,
+      0.00016091631977930944
+    ],
+    "session_1_15m_mean": [
+      -2.495483098509634e-05,
+      2.40612393550246e-05
+    ],
+    "session_1_60m_mean": [
+      -3.2164750657317846e-05,
+      6.909665607264225e-05
+    ],
+    "session_1_4h_mean": [
+      -0.00013934599996337456,
+      0.00010667788768079521
+    ],
+    "london_atr_terc0_60m_mean": [
+      -3.2164750657317846e-05,
+      6.909665607264225e-05
+    ],
+    "session_2_15m_mean": [
+      -4.381210334006151e-05,
+      3.546754578442385e-05
+    ],
+    "session_2_60m_mean": [
+      -7.829911554532109e-05,
+      4.3454620765351877e-05
+    ],
+    "session_2_4h_mean": [
+      -6.12926665186531e-05,
+      8.527718312178335e-05
+    ],
+    "weekday_0_60m_mean": [
+      -8.429981950202602e-06,
+      6.278899833800182e-05
+    ],
+    "weekday_1_60m_mean": [
+      1.4358095411899785e-05,
+      7.633582357460243e-05
+    ],
+    "weekday_2_60m_mean": [
+      -1.689040589234068e-05,
+      8.955874275117225e-05
+    ],
+    "weekday_3_60m_mean": [
+      -2.176138855145009e-05,
+      6.564822518766769e-05
+    ],
+    "weekday_4_60m_mean": [
+      3.196592174505796e-05,
+      9.915221816924049e-05
+    ]
+  },
+  "p_values": {
+    "session_2_15m_mean": [
+      0.0,
+      null,
+      0.0
+    ],
+    "session_2_60m_mean": [
+      0.0,
+      null,
+      0.0
+    ],
+    "session_1_15m_mean": [
+      1.9375304314714744e-93,
+      null,
+      2.9062956472072116e-93
+    ],
+    "weekday_2_60m_mean": [
+      6.93170785768006e-09,
+      null,
+      7.9981244511693e-09
+    ],
+    "weekday_3_60m_mean": [
+      1.3059619925741293e-05,
+      null,
+      1.39924499204371e-05
+    ],
+    "session_0_15m_mean": [
+      0.0,
+      null,
+      0.0
+    ],
+    "london_atr_terc0_60m_mean": [
+      9.802989441633868e-127,
+      null,
+      1.6338315736056446e-126
+    ],
+    "session_0_4h_mean": [
+      0.0,
+      null,
+      0.0
+    ],
+    "session_1_4h_mean": [
+      0.0,
+      null,
+      0.0
+    ],
+    "weekday_4_60m_mean": [
+      1.5643734193472697e-80,
+      null,
+      2.133236480928095e-80
+    ],
+    "session_1_60m_mean": [
+      9.802989441633868e-127,
+      null,
+      1.6338315736056446e-126
+    ],
+    "weekday_0_60m_mean": [
+      4.518764781522584e-76,
+      null,
+      5.64845597690323e-76
+    ],
+    "weekday_1_60m_mean": [
+      0.0003443112173094943,
+      null,
+      0.0003443112173094943
+    ],
+    "session_0_60m_mean": [
+      0.0,
+      null,
+      0.0
+    ],
+    "session_2_4h_mean": [
+      0.0,
+      null,
+      0.0
+    ]
+  },
+  "effect_reports": [
+    {
+      "finding": "Asian 15m mean return",
+      "condition": "session=Asian",
+      "baseline": 6.919822955679921e-06,
+      "effect_value": 5.684170199170323e-06,
+      "effect_unit": "return_difference",
+      "ci_lower": -4.973709685181839e-06,
+      "ci_upper": 2.605704966461406e-05,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": -0.001328851549046449,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7849158911113876,
+      "recommendation": "Ignore",
+      "n_obs": 866300,
+      "n_obs_baseline": 2786931
+    },
+    {
+      "finding": "Asian 60m mean return",
+      "condition": "session=Asian",
+      "baseline": 2.7602467651639074e-05,
+      "effect_value": 2.608727826636372e-05,
+      "effect_unit": "return_difference",
+      "ci_lower": -3.160015379365468e-05,
+      "ci_upper": 4.608813347693542e-05,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": -0.0008177665211797838,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7849158911113876,
+      "recommendation": "Ignore",
+      "n_obs": 866300,
+      "n_obs_baseline": 2786886
+    },
+    {
+      "finding": "Asian 4h mean return",
+      "condition": "session=Asian",
+      "baseline": 0.00011040699131631646,
+      "effect_value": 9.062674510596564e-05,
+      "effect_unit": "return_difference",
+      "ci_lower": 2.98297272463319e-06,
+      "ci_upper": 0.00016091631977930944,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": -0.0053558556827529875,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7849158911113876,
+      "recommendation": "Ignore",
+      "n_obs": 866300,
+      "n_obs_baseline": 2786706
+    },
+    {
+      "finding": "London 15m mean return",
+      "condition": "session=London",
+      "baseline": 6.919822955679921e-06,
+      "effect_value": 5.526360320142883e-06,
+      "effect_unit": "return_difference",
+      "ci_lower": -2.495483098509634e-05,
+      "ci_upper": 2.40612393550246e-05,
+      "p_perm": 1.9375304314714744e-93,
+      "p_adj": 1.9375304314714744e-93,
+      "effect_d": -0.0014528357457628818,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7849158911113876,
+      "recommendation": "Ignore",
+      "n_obs": 610929,
+      "n_obs_baseline": 2786931
+    },
+    {
+      "finding": "London 60m mean return",
+      "condition": "session=London",
+      "baseline": 2.7602467651639074e-05,
+      "effect_value": 1.6446774482292146e-05,
+      "effect_unit": "return_difference",
+      "ci_lower": -3.2164750657317846e-05,
+      "ci_upper": 6.909665607264225e-05,
+      "p_perm": 9.802989441633868e-127,
+      "p_adj": 9.802989441633868e-127,
+      "effect_d": -0.0058060017498019895,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7849158911113876,
+      "recommendation": "Ignore",
+      "n_obs": 610929,
+      "n_obs_baseline": 2786886
+    },
+    {
+      "finding": "London 4h mean return",
+      "condition": "session=London",
+      "baseline": 0.00011040699131631646,
+      "effect_value": 2.5739224148504616e-05,
+      "effect_unit": "return_difference",
+      "ci_lower": -0.00013934599996337456,
+      "ci_upper": 0.00010667788768079521,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": -0.02097650683082704,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.7849158911113876,
+      "recommendation": "Ignore",
+      "n_obs": 610929,
+      "n_obs_baseline": 2786706
+    },
+    {
+      "finding": "NY 15m mean return",
+      "condition": "session=NY",
+      "baseline": 6.919822955679921e-06,
+      "effect_value": 1.481242028135102e-06,
+      "effect_unit": "return_difference",
+      "ci_lower": -4.381210334006151e-05,
+      "ci_upper": 3.546754578442385e-05,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": -0.005148255842573262,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7849158911113876,
+      "recommendation": "Ignore",
+      "n_obs": 601726,
+      "n_obs_baseline": 2786931
+    },
+    {
+      "finding": "NY 60m mean return",
+      "condition": "session=NY",
+      "baseline": 2.7602467651639074e-05,
+      "effect_value": 2.9152369229960527e-06,
+      "effect_unit": "return_difference",
+      "ci_lower": -7.829911554532109e-05,
+      "ci_upper": 4.3454620765351877e-05,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": -0.011803137894677957,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.7849158911113876,
+      "recommendation": "Ignore",
+      "n_obs": 601726,
+      "n_obs_baseline": 2786886
+    },
+    {
+      "finding": "NY 4h mean return",
+      "condition": "session=NY",
+      "baseline": 0.00011040699131631646,
+      "effect_value": 3.4053374588259615e-05,
+      "effect_unit": "return_difference",
+      "ci_lower": -6.12926665186531e-05,
+      "ci_upper": 8.527718312178335e-05,
+      "p_perm": 0.0,
+      "p_adj": 0.0,
+      "effect_d": -0.019105561343118672,
+      "practical_min": 0.001,
+      "is_practical": false,
+      "ci_excl_zero": true,
+      "stability": 0.7849158911113876,
+      "recommendation": "Ignore",
+      "n_obs": 601726,
+      "n_obs_baseline": 2786706
+    }
+  ],
+  "summary": "n_observations = 2,786,946\nstability_score = 0.78\nconclusion = negative\nactionable findings = 0\nmonitor findings = 0"
+}

@@ -1,0 +1,78 @@
+
+============================================================
+  XAUUSD Market Diagnostics Framework
+  Run ID : corrected_2018_2025
+  Period : 2018–2025
+  Diagnostics: ['d11', 'd01', 'd02', 'd03', 'd04', 'd05', 'd06', 'd07', 'd08', 'd09', 'd10']
+============================================================
+
+Loading data 2018–2025 …
+  loading 2018 …
+  loading 2019 …
+  loading 2020 …
+  loading 2021 …
+  loading 2022 …
+  loading 2023 …
+  loading 2024 …
+  loading 2025 …
+  M1 bars loaded: 2,786,946
+  resampling → M5 …
+  resampling → M15 …
+  resampling → H1 …
+  resampling → H4 …
+  computing ATR / derived series …
+  done — M1=2,786,946  M5=557,918  M15=186,074  H1=46,637  H4=12,748
+  Loaded in 148.3s  M1 bars: 2,786,946
+
+Building DataProxy …
+  DataProxy: labelling sessions …
+  DataProxy: building daily frame …
+  DataProxy: computing N-day highs/lows …
+  DataProxy: computing forward returns …
+  DataProxy: ready.
+  DataProxy ready in 7.4s
+
+
+[d11] Running …  hypothesis: Forward return distributions at multiple horizons differ mat
+/Users/MartinOile/Library/Python/3.11/lib/python/site-packages/numpy/lib/_nanfunctions_impl.py:1406: RuntimeWarning: All-NaN slice encountered
+  return _nanquantile_unchecked(
+  [d11] n=2,786,946  stability=0.78  conclusion=negative
+    [✗ Ignore]  Asian 15m mean return  |  session=Asian
+    [✗ Ignore]  Asian 60m mean return  |  session=Asian
+    [✗ Ignore]  Asian 4h mean return  |  session=Asian
+  [d11] done in 184.0s  conclusion=negative  stability=0.78
+
+
+[d01] Running …  hypothesis: Sessions have materially different directional efficiency an
+  [d01] n=8,670  stability=0.98  conclusion=negative
+    [✗ Ignore]  Asian→London continuation  |  all Asian sessions
+    [✗ Ignore]  Asian→London cont (high DE prior)  |  Asian DE > 0.65
+    [✗ Ignore]  London→NY continuation  |  all London sessions
+  [d01] done in 122.5s  conclusion=negative  stability=0.98
+
+
+[d02] Running …  hypothesis: After an N-bar M5 impulse exceeding Y×ATR, pullback depth an
+  [d02] n=13,251  stability=0.69  conclusion=null
+    [✗ Ignore]  Pullback depth after Asian impulse  |  session=Asian, N=5, ≥1.5×ATR
+    [✗ Ignore]  Pullback depth after London impulse  |  session=London, N=5, ≥1.5×ATR
+    [✗ Ignore]  Pullback depth after NY impulse  |  session=NY, N=5, ≥1.5×ATR
+  [d02] done in 120.2s  conclusion=null  stability=0.69
+
+
+[d03] Running …  hypothesis: Previous day range (PDR) quintile predicts today's London se
+  [d03] n=2,477  stability=0.76  conclusion=positive
+    [✓ Actionable]  Today range / PDR: compressed (Q1) vs wide (Q5) prior  |  PDR quintile 1 (most compressed)
+  [d03] done in 8.4s  conclusion=positive  stability=0.76
+
+
+[d04] Running …  hypothesis: M1 bar range exhibits strong positive autocorrelation up to 
+
+============================================================
+  XAUUSD Market Diagnostics Framework
+  Run ID : corrected_2018_2025
+  Period : 2018–2025
+  Diagnostics: ['d04', 'd05', 'd06', 'd07', 'd08', 'd09', 'd10']
+============================================================
+
+Loading data 2018–2025 …
+  loading 2018 …

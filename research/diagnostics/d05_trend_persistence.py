@@ -34,17 +34,22 @@ class D05TrendPersistence(BaseDiagnostic):
         flag_h = data.nd_high.get(primary_n, np.zeros(len(m1.ts), dtype=bool))
         flag_l = data.nd_low.get(primary_n, np.zeros(len(m1.ts), dtype=bool))
 
-        records = []
-        for bi in bar_indices:
-            if flag_h[bi] or flag_l[bi]:
-                direction = 1 if flag_h[bi] else -1
-                records.append({
-                    "bar_idx":   int(bi),
-                    "direction": direction,
-                    "session":   int(data.session[bi]),
-                    **{lab: float(fwd[h][bi]) for h, lab in zip(_HORIZONS, _HLABELS)},
-                })
-        df = pd.DataFrame(records)
+        # ── Vectorised: no Python loop over 2.79M bars ─────────────────────────
+        event_mask = flag_h[bar_indices] | flag_l[bar_indices]
+        event_bars = bar_indices[event_mask]
+        if len(event_bars) == 0:
+            return _empty()
+
+        direction_arr = np.where(flag_h[event_bars], 1, -1)
+        session_arr   = data.session[event_bars]
+        fwd_cols      = {lab: fwd[h][event_bars] for h, lab in zip(_HORIZONS, _HLABELS)}
+
+        df = pd.DataFrame({
+            "bar_idx":   event_bars,
+            "direction": direction_arr,
+            "session":   session_arr,
+            **fwd_cols,
+        })
         n_obs = len(df)
 
         if n_obs < 30:

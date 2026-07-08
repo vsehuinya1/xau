@@ -79,36 +79,40 @@ class D06FvgFillRate(BaseDiagnostic):
         if len(fvg_df) < 50:
             return _empty()
 
-        N = len(m1.close)
-        records = []
-        for _, row in fvg_df.iterrows():
-            i    = int(row["bar_idx"])
-            dirn = int(row["direction"])
-            mid  = (float(row["gap_top"]) + float(row["gap_bot"])) / 2
-            atr  = float(row["atr_ref"]) if not np.isnan(row["atr_ref"]) else 1.0
-            sess = int(data.session[i]) if i < len(data.session) else 3
+        N        = len(m1.close)
+        bar_idx  = fvg_df["bar_idx"].values.astype(np.int64)
+        dirn_arr = fvg_df["direction"].values.astype(np.int8)
+        mid_arr  = ((fvg_df["gap_top"].values + fvg_df["gap_bot"].values) / 2).astype(np.float64)
+        atr_arr  = np.where(np.isnan(fvg_df["atr_ref"].values), 1.0, fvg_df["atr_ref"].values)
+        sess_arr = np.where(bar_idx < len(data.session), data.session[np.clip(bar_idx, 0, len(data.session)-1)], 3)
 
-            filled_at: dict[int, bool] = {h: False for h in _FILL_HORIZONS}
-            for h in _FILL_HORIZONS:
-                end = min(i + h, N)
-                window_lo = np.min(m1.low[i:end])
-                window_hi = np.max(m1.high[i:end])
-                if dirn == 1:
-                    filled_at[h] = window_lo <= mid
-                else:
-                    filled_at[h] = window_hi >= mid
-                if filled_at[h]:
-                    break    # once filled at shorter horizon, also filled at longer
+        # ── Vectorised fill check: forward rolling min/max for each horizon ─────
+        # forward_min_low[i]  = min(m1.low[i : i+h])
+        # forward_max_high[i] = max(m1.high[i : i+h])
+        # Achieved by reversing the series, rolling backward, reversing back.
+        low_s  = pd.Series(np.asarray(m1.low,  dtype=np.float64))
+        high_s = pd.Series(np.asarray(m1.high, dtype=np.float64))
 
-            records.append({
-                "bar_idx":   i,
-                "direction": dirn,
-                "gap_size_atr": float(row["gap_size"]) / (atr + 1e-9),
-                "session":   sess,
-                **{f"filled_{h}": int(filled_at[h]) for h in _FILL_HORIZONS},
-            })
+        fill_cols: dict[int, np.ndarray] = {}
+        last_filled = np.zeros(len(bar_idx), dtype=bool)
+        for h in _FILL_HORIZONS:
+            fwd_min = low_s[::-1].rolling(h, min_periods=1).min()[::-1].values
+            fwd_max = high_s[::-1].rolling(h, min_periods=1).max()[::-1].values
+            idx_capped = np.minimum(bar_idx, N - 1)
+            bull_fill  = (dirn_arr == 1)  & (fwd_min[idx_capped] <= mid_arr)
+            bear_fill  = (dirn_arr == -1) & (fwd_max[idx_capped] >= mid_arr)
+            filled     = (bull_fill | bear_fill) | last_filled  # monotone: filled at h ⊇ filled at shorter h
+            fill_cols[h]  = filled.astype(np.int8)
+            last_filled   = filled
 
-        df = pd.DataFrame(records)
+        df = pd.DataFrame({
+            "bar_idx":      bar_idx,
+            "direction":    dirn_arr,
+            "gap_size_atr": fvg_df["gap_size"].values / (atr_arr + 1e-9),
+            "session":      sess_arr,
+            **{f"filled_{h}": fill_cols[h] for h in _FILL_HORIZONS},
+        })
+
         n_obs = len(df)
 
         effect_sizes: dict[str, float] = {}

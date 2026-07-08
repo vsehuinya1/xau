@@ -1,0 +1,139 @@
+{
+  "diagnostic_id": "d02",
+  "hypothesis": "After an N-bar M5 impulse exceeding Y\u00d7ATR, pullback depth and continuation probability are non-uniform and measurable by session/context.",
+  "parameters": {
+    "n_bars": 5,
+    "atr_mult": 1.5
+  },
+  "date_range": [
+    "2018-01-01",
+    "2025-12-31"
+  ],
+  "sample_size": 13251,
+  "stability_score": 0.6868956158662367,
+  "conclusion": "null",
+  "warnings": [
+    "FDR_ADJUSTED: 0/3 tests rejected at q=0.05 after BH correction"
+  ],
+  "effect_sizes": {
+    "pullback_mean": 0.4927702373304523,
+    "continuation_rate": 0.7979775111312354,
+    "pullback_Asian": 0.49014038942418214,
+    "continuation_Asian": 0.8052995391705069,
+    "pullback_London": 0.5012692692734645,
+    "continuation_London": 0.8059100067159167,
+    "pullback_NY": 0.48381187279585447,
+    "continuation_NY": 0.7926078028747433
+  },
+  "confidence_intervals": {
+    "pullback_mean": [
+      0.48245850945942664,
+      0.5004503074806477
+    ],
+    "continuation_rate": [
+      0.7843996,
+      0.8056
+    ],
+    "pullback_Asian": [
+      0.47975652558373666,
+      0.5003727571726851
+    ],
+    "continuation_Asian": [
+      0.792901581886381,
+      0.8161290322580645
+    ],
+    "pullback_London": [
+      0.48907959846011223,
+      0.5135162874925477
+    ],
+    "continuation_London": [
+      0.7904633982538617,
+      0.8186702484889188
+    ],
+    "pullback_NY": [
+      0.4715366223589421,
+      0.4966706298591567
+    ],
+    "continuation_NY": [
+      0.7768651608487337,
+      0.806070282227119
+    ]
+  },
+  "p_values": {
+    "pullback_Asian": [
+      null,
+      0.564,
+      0.564
+    ],
+    "pullback_London": [
+      null,
+      0.12366666666666666,
+      0.1855
+    ],
+    "pullback_NY": [
+      null,
+      0.11366666666666667,
+      0.1855
+    ]
+  },
+  "effect_reports": [
+    {
+      "finding": "Pullback depth after Asian impulse",
+      "condition": "session=Asian, N=5, \u22651.5\u00d7ATR",
+      "baseline": 0.4927702373304523,
+      "effect_value": 0.49014038942418214,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.47975652558373666,
+      "ci_upper": 0.5003727571726851,
+      "p_perm": 0.564,
+      "p_adj": 0.564,
+      "effect_d": -0.011372302812757702,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.6868956158662367,
+      "recommendation": "Ignore",
+      "n_obs": 4340,
+      "n_obs_baseline": 13251
+    },
+    {
+      "finding": "Pullback depth after London impulse",
+      "condition": "session=London, N=5, \u22651.5\u00d7ATR",
+      "baseline": 0.4927702373304523,
+      "effect_value": 0.5012692692734645,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.48907959846011223,
+      "ci_upper": 0.5135162874925477,
+      "p_perm": 0.12366666666666666,
+      "p_adj": 0.12366666666666666,
+      "effect_d": 0.03188222872531226,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.6868956158662367,
+      "recommendation": "Ignore",
+      "n_obs": 2978,
+      "n_obs_baseline": 13251
+    },
+    {
+      "finding": "Pullback depth after NY impulse",
+      "condition": "session=NY, N=5, \u22651.5\u00d7ATR",
+      "baseline": 0.4927702373304523,
+      "effect_value": 0.48381187279585447,
+      "effect_unit": "probability_difference",
+      "ci_lower": 0.4715366223589421,
+      "ci_upper": 0.4966706298591567,
+      "p_perm": 0.11366666666666667,
+      "p_adj": 0.11366666666666667,
+      "effect_d": -0.033423366568222326,
+      "practical_min": 0.1,
+      "is_practical": false,
+      "ci_excl_zero": false,
+      "stability": 0.6868956158662367,
+      "recommendation": "Ignore",
+      "n_obs": 2922,
+      "n_obs_baseline": 13251
+    }
+  ],
+  "summary": "n_observations = 13,251\nstability_score = 0.69\nconclusion = null\nactionable findings = 0\nmonitor findings = 0"
+}

@@ -1,0 +1,26 @@
+======================================================================
+  D03 — Previous day range (PDR) quintile predicts today's London se
+======================================================================
+  Date range    : 2018-01-01 → 2025-12-31
+  Sample size   : 2,477
+  Stability     : 0.76 / 1.00
+  Conclusion    : POSITIVE
+
+  WARNINGS
+    ⚠  FDR_ADJUSTED: 2/2 tests rejected at q=0.05 after BH correction
+
+  FINDINGS  (sorted by stability)
+
+    [✓ Actionable]  Today range / PDR: compressed (Q1) vs wide (Q5) prior  |  PDR quintile 1 (most compressed)
+      Baseline 160.6%  →  Effect 120.7%  (-39.9%)
+      95% CI [110.4%, 135.3%]  p_perm=0.0000  p_adj=0.0000  d=-0.26  stab=0.76  n=495
+
+  SUMMARY
+  n_observations = 2,477
+  stability_score = 0.76
+  conclusion = positive
+  actionable findings = 1
+  monitor findings = 0
+  
+  Actionable findings:
+    Today range / PDR: compressed (Q1) vs wide (Q5) prior: -39.9%

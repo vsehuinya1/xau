@@ -1,0 +1,31 @@
+======================================================================
+  D02 — After an N-bar M5 impulse exceeding Y×ATR, pullback depth an
+======================================================================
+  Date range    : 2018-01-01 → 2025-12-31
+  Sample size   : 13,251
+  Stability     : 0.69 / 1.00
+  Conclusion    : NULL
+
+  WARNINGS
+    ⚠  FDR_ADJUSTED: 0/3 tests rejected at q=0.05 after BH correction
+
+  FINDINGS  (sorted by stability)
+
+    [✗ Ignore]  Pullback depth after Asian impulse  |  session=Asian, N=5, ≥1.5×ATR
+      Baseline 49.3%  →  Effect 49.0%  (-0.3%)
+      95% CI [48.0%, 50.0%]  p_perm=0.5640  p_adj=0.5640  d=-0.01  stab=0.69  n=4340
+
+    [✗ Ignore]  Pullback depth after London impulse  |  session=London, N=5, ≥1.5×ATR
+      Baseline 49.3%  →  Effect 50.1%  (+0.8%)
+      95% CI [48.9%, 51.4%]  p_perm=0.1237  p_adj=0.1237  d=0.03  stab=0.69  n=2978
+
+    [✗ Ignore]  Pullback depth after NY impulse  |  session=NY, N=5, ≥1.5×ATR
+      Baseline 49.3%  →  Effect 48.4%  (-0.9%)
+      95% CI [47.2%, 49.7%]  p_perm=0.1137  p_adj=0.1137  d=-0.03  stab=0.69  n=2922
+
+  SUMMARY
+  n_observations = 13,251
+  stability_score = 0.69
+  conclusion = null
+  actionable findings = 0
+  monitor findings = 0
