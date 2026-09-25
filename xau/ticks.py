@@ -1,24 +1,13 @@
-"""Load ticks archived by mt5/winpy/recorder.py.
-
-MT5 stamps ticks in the broker's server time. Pepperstone runs its server
-clock at New York time + 7 hours, so the daily rollover (17:00 New York) lands
-at 00:00: UTC+3 during US daylight saving, UTC+2 otherwise. Checked: +3 on
-2026-09-25. The +2 still needs confirming in offset_log.csv after the US clock
-change on 2026-11-01.
-"""
+"""Load ticks archived by mt5/winpy/recorder.py, indexed by UTC time."""
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-TICKS_DIR = Path(__file__).resolve().parent.parent / "data" / "ticks"
+from xau.servertime import server_to_utc, to_utc
+
+TICKS_DIR = Path(__file__).resolve().parent.parent / "data" / "mt5" / "ticks"
 HOUR = pd.Timedelta(hours=1)
-
-
-def server_to_utc(server_ms):
-    """MT5 server-time milliseconds -> UTC DatetimeIndex."""
-    new_york = pd.to_datetime(np.asarray(server_ms), unit="ms") - pd.Timedelta(hours=7)
-    return new_york.tz_localize("America/New_York", ambiguous="raise", nonexistent="raise").tz_convert("UTC")
 
 
 def load_ticks(start, end, server="Pepperstone-Demo", symbol="XAUUSD"):
@@ -28,8 +17,7 @@ def load_ticks(start, end, server="Pepperstone-Demo", symbol="XAUUSD"):
     server-time hour in the range hasn't been archived. An archived hour with
     no ticks means the market was closed.
     """
-    start, end = (pd.Timestamp(t).tz_localize("UTC") if pd.Timestamp(t).tzinfo is None
-                  else pd.Timestamp(t).tz_convert("UTC") for t in (start, end))
+    start, end = to_utc(start), to_utc(end)
     root = TICKS_DIR / server / symbol
     # Server time is UTC+2 or UTC+3, so these server hours cover the range.
     hours = pd.date_range((start + 2 * HOUR).tz_localize(None).floor("h"),

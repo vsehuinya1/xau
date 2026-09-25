@@ -14,7 +14,8 @@ NUMPY_VERSION=1.26.4
 # Wait for Wine to go idle, but never hang on a process that won't exit.
 settle() { timeout 120 wineserver -w || wineserver -k || true; }
 
-rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
+# /tmp survives container restarts; drop the previous run's X and Wine state.
+rm -rf /tmp/.X99-lock /tmp/.X11-unix/X99 "/tmp/.wine-$(id -u)"
 Xvfb :99 -screen 0 1366x768x24 -nolisten tcp &
 for _ in $(seq 50); do [[ -S /tmp/.X11-unix/X99 ]] && break; sleep 0.2; done
 openbox &
@@ -67,10 +68,6 @@ if [[ -n "${MT5_LOGIN:-}" ]]; then
 fi
 
 wine "$TERMINAL" "${TERMINAL_ARGS[@]}" &
-# MT5 restarts itself to apply updates, so wait on the whole Wine session
-# rather than the first terminal process. wineserver -w returns at once if
-# the server isn't up yet, so wait for the terminal to appear first.
-for _ in $(seq 60); do pgrep -f terminal64.exe >/dev/null && break; sleep 1; done
 
 # Tick recorder (mt5/winpy, mounted at /opt/xau), restarted whenever it exits.
 # It waits for the terminal to log in by itself.
@@ -83,4 +80,11 @@ if [[ -n "${MT5_LOGIN:-}" && -f /opt/xau/recorder.py ]]; then
     ) &
 fi
 
-exec wineserver -w
+# Stay up while the terminal runs. MT5 restarts itself to apply updates, so
+# exit (and let Docker restart the container) only once it's been gone 60s.
+gone=0
+while (( gone < 60 )); do
+    if pgrep -f 'MetaTrader 5.terminal64.exe' >/dev/null; then gone=0; else gone=$((gone + 5)); fi
+    sleep 5
+done
+echo "terminal not running for 60s; exiting"

@@ -19,8 +19,13 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 
 - One-minute data from histdata.com is timestamped in **EST with no daylight-saving shift**, not UTC. Convert before any session or event logic. This bug once invalidated results.
 - Treat any out-of-sample profit factor above about 3 as a bug or too few trades until you've checked it.
-- MT5 timestamps (tick `time`/`time_msc` and bar `time`) are in the broker's server time, not UTC, even though they look like Unix times. Pepperstone-Demo was exactly UTC+3 on 2026-09-25. It is probably UTC+2 in northern winter; verify that after the DST change.
-- On Pepperstone-Demo, tick history goes back only about 4 weeks: when checked on 2026-09-25, the earliest tick was 2026-08-28. One-minute bars are capped by the terminal's MaxBars setting (100,000 bars, about 3 months). Daily bars go back to 2012.
+- MT5 timestamps (tick `time`/`time_msc` and bar `time`) are in the broker's server time, not UTC, even though they look like Unix times. Always convert them with `xau.servertime.server_to_utc`, never by hand.
+  - **The rule:** Pepperstone's server runs at New York time + 7 hours.
+  - **The exception:** in winter 2017/18 the server stayed on UTC+3. The converter has that exception built in.
+  - **The evidence:** checked against the live clock, the 18:00 New York daily reopens (99.7% of 2,390 since 2017), and the 08:30 NFP spikes.
+  - **The trap:** Pepperstone's closes are set in server time, so they look right whatever the clock does. Only market-driven times (reopens, news spikes) can reveal an offset error.
+- On Pepperstone-Demo, tick history goes back only about 4 weeks: when checked on 2026-09-25, the earliest tick was 2026-08-28.
+- Pepperstone's one-minute bars are real one-minute data only from mid-2017, with full coverage from 2018. Before that, the M1 series holds hourly bars (2016) and daily bars (1998–2015). Reaching the oldest bars needs MaxBars of at least 3.3 million; the entrypoint sets 5 million through the startup config, although `common.ini` keeps showing 100,000. Each bar carries a `spread` in points: the median was 7 in 2018 and 13 in 2026, matching the recorded ticks.
 - XAUUSD at Pepperstone: 100 oz per lot, 0.01 lot minimum, and a $0.01 move is worth $1 per lot.
 
 ## Conventions
@@ -39,12 +44,13 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - Two versions are pinned deliberately:
   - **Wine 10.0 stable.** Under Wine 11, the Python IPC times out.
   - **numpy 1.26.4.** numpy 2.x calls `ucrtbase.crealf`, which Wine 10 doesn't have.
-- The tick recorder (`mt5/winpy/recorder.py`) runs inside the container whenever `MT5_LOGIN` is set. It archives each completed server-time hour of XAUUSD ticks to `data/ticks/<server>/<symbol>/YYYY/MM/DD/HH.npz`, as raw MT5 fields in server time.
+- The tick recorder (`mt5/winpy/recorder.py`) runs inside the container whenever `MT5_LOGIN` is set. It archives each completed server-time hour of XAUUSD ticks to `data/mt5/ticks/<server>/<symbol>/YYYY/MM/DD/HH.npz`, as raw MT5 fields in server time. The container can write only to `data/mt5/`, which is owned by uid 1001.
   - An empty file means the market was closed. A missing file means that hour hasn't been archived.
   - Gaps shorter than the server's roughly 4-week retention refill themselves.
   - `offset_log.csv` records the observed server-clock offset every hour.
   - `mt5/winpy/verify.py` re-fetches the archived hours and compares them.
-- On the Linux side, load ticks with `xau.ticks.load_ticks(start_utc, end_utc)`. It converts server time to UTC and raises an error if any hour in the range hasn't been archived. Set up the environment with `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
+- `mt5/winpy/download_bars.py` saves all M1 bars to `data/mt5/bars/<server>/<symbol>/M1/YYYY.npz`. Re-run it to update them.
+- On the Linux side, load ticks with `xau.ticks.load_ticks(start_utc, end_utc)`. It converts server time to UTC and raises an error if any hour in the range hasn't been archived. Load bars with `xau.bars.load_m1(start_utc, end_utc)`. Set up the environment with `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
 - `mt5.initialize()` works only once the terminal is logged in to an account. Before that, it returns an IPC timeout (-10005). To run a script with the Windows Python: `docker exec -i xau-mt5 bash -c 'wine "$WINEPREFIX/drive_c/Program Files/Python311/python.exe" -' < script.py`.
 
 ## Decisions (2026-09-25)
@@ -54,4 +60,4 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - **Timeframe:** intraday (M1–M15), flat by the end of the day.
 - **Launch:** a paper/demo account first, with full logging. Real money only after a set evaluation period.
 - **Broker account:** Pepperstone. The demo is a Razor account on `Pepperstone-Demo` (Pepperstone Group Limited), in USD. Model costs as raw spread plus a commission per lot; the commission is still to be measured.
-- **Price history:** Pepperstone ticks recorded by us from 2026-08-28 onward. Long history comes from Dukascopy ticks, with Pepperstone's own one-minute bars as a cross-check. Dukascopy answered 429/503 to this VPS on 2026-09-25, so download slowly and back off.
+- **Price history:** Pepperstone ticks recorded by us from 2026-08-28 onward, plus Pepperstone's own M1 bars from 2018. Dukascopy ticks will provide bid/ask history as a cross-check, but Dukascopy answered 429/503 to this VPS on 2026-09-25, so download slowly and back off.
