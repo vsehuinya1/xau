@@ -1,8 +1,17 @@
 # H07: Do the dollar, EURUSD, USDJPY or silver move before gold?
 
-**Status:** PRE-REGISTERED 2026-09-25 under the user's standing goal ("Resume
-the tests. Come back with an edge"). Nothing had been run before this file was
-committed; results go in `H07-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit 47d6e22) under the user's
+standing goal.
+**Run 2026-09-25: FAILED, but with the first genuine effect so far.**
+- **USDJPY:** passed C1 (t = 3.11) and C3 (positive in every sub-period).
+  Gold follows sharp USDJPY moves by +0.046 ATR over 15 minutes.
+- **USDX and EURUSD:** point the same way, at t = 2.32 and 1.84.
+- **Silver:** t = 0.60.
+- **Why it fails:** the effect is too small to pay costs. In 2024–25 it was
+  about $0.10–0.15/oz against a $0.24 round trip (C2), it sits mostly in Asia
+  hours (C4), and it fails C5.
+- **Conclusion:** the dollar leads gold by minutes, measurably but not
+  profitably on its own. See `H07-results.md`.
 
 ## Question
 

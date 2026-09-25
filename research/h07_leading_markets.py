@@ -107,7 +107,7 @@ def main():
            "C5: C2 holds without the top 1% of events.\n",
            "## Each test in full\n", md(cells.drop(columns=["C1", "C2", "C3", "C4", "C5", "PASS"]).T),
            f"\nControls: {n_controls:,} gold M1 moments, each used long and short.\n"]
-    both = pd.concat(tests, names=["leader"]).reset_index(level=0)
+    both = pd.concat(tests.values(), ignore_index=True)  # events carry their leader column
     for name, col in (("session", "session"), ("whether gold had already followed", "gold_followed")):
         by = both.groupby(["leader", col])
         out.append(f"\n## By {name} (diagnostic)\n")

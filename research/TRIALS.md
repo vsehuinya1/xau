@@ -19,7 +19,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H06 | Volume profile: prior-day POC/VAH/VAL reactions (8) and the 80% rule (2), M5 and M15 | 2026-09-25 | 10 | 0 | **failed**: best t = 1.28; the "80% rule" reached the far edge first 31% of the time |
 
-| H07 | Leading markets: USDX, EURUSD, USDJPY, silver 5-min moves → gold next 15 min | 2026-09-25 | 4 | 0 | not run |
+| H07 | Leading markets: USDX, EURUSD, USDJPY, silver 5-min moves → gold next 15 min | 2026-09-25 | 4 | 0 | **failed** on costs: USDJPY t = 3.11 and consistent (C1, C3), USDX t = 2.32, but the effect is about half the round-trip cost |
 
 **Running total:** 25
 
