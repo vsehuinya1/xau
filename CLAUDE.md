@@ -60,4 +60,5 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - **Timeframe:** intraday (M1–M15), flat by the end of the day.
 - **Launch:** a paper/demo account first, with full logging. Real money only after a set evaluation period.
 - **Broker account:** Pepperstone. The demo is a Razor account on `Pepperstone-Demo` (Pepperstone Group Limited), in USD. Model costs as raw spread plus a commission per lot; the commission is still to be measured.
+- **Holdout:** market data from 2025-10-01 UTC onward is locked until a strategy is final, and is then tested once. `xau/holdout.py` defines it, and the loaders enforce it (`allow_holdout=True` opts in). Allowed uses are the final test, data-quality checks, and spreads for the cost model. Nothing that looks at returns or signals. The recorded ticks are a second, forward holdout.
 - **Price history:** Pepperstone ticks recorded by us from 2026-08-28 onward, plus Pepperstone's own M1 bars from 2018. Dukascopy ticks will provide bid/ask history as a cross-check, but Dukascopy answered 429/503 to this VPS on 2026-09-25, so download slowly and back off.

@@ -9,14 +9,24 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from xau import holdout
 from xau.servertime import server_to_utc, to_utc
 
 BARS_DIR = Path(__file__).resolve().parent.parent / "data" / "mt5" / "bars"
 FIELDS = ("open", "high", "low", "close", "tick_volume", "spread")
 
 
-def load_m1(start=None, end=None, server="Pepperstone-Demo", symbol="XAUUSD"):
-    """M1 bars with start <= UTC bar open < end (either bound may be None)."""
+def load_m1(start=None, end=None, server="Pepperstone-Demo", symbol="XAUUSD", allow_holdout=False):
+    """M1 bars with start <= UTC bar open < end.
+
+    start=None means from the first bar. end=None means up to the holdout, or
+    to the last bar with allow_holdout=True. An end inside the holdout raises
+    unless allow_holdout=True (see xau/holdout.py).
+    """
+    if end is None and not allow_holdout:
+        end = holdout.HOLDOUT_START
+    if end is not None:
+        holdout.check(to_utc(end), allow_holdout)
     root = BARS_DIR / server / symbol / "M1"
     parts = []
     for path in sorted(root.glob("*.npz")):

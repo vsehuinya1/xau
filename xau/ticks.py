@@ -4,20 +4,23 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from xau import holdout
 from xau.servertime import server_to_utc, to_utc
 
 TICKS_DIR = Path(__file__).resolve().parent.parent / "data" / "mt5" / "ticks"
 HOUR = pd.Timedelta(hours=1)
 
 
-def load_ticks(start, end, server="Pepperstone-Demo", symbol="XAUUSD"):
+def load_ticks(start, end, server="Pepperstone-Demo", symbol="XAUUSD", allow_holdout=False):
     """Ticks with start <= UTC time < end, as a DataFrame of bid, ask and flags.
 
     start and end are UTC (naive values are taken as UTC). Raises if any
     server-time hour in the range hasn't been archived. An archived hour with
-    no ticks means the market was closed.
+    no ticks means the market was closed. The recorded ticks all fall in the
+    holdout, so reading them needs allow_holdout=True (see xau/holdout.py).
     """
     start, end = to_utc(start), to_utc(end)
+    holdout.check(end, allow_holdout)
     root = TICKS_DIR / server / symbol
     # Server time is UTC+2 or UTC+3, so these server hours cover the range.
     hours = pd.date_range((start + 2 * HOUR).tz_localize(None).floor("h"),
