@@ -15,7 +15,9 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H04 | Time of day: long Asia 19:00–03:00, short NY 08:00–16:00 (trend-neutral) | 2026-09-25 | 1 | 0 | **failed**: +0.45 bp/day, t = 0.25; sign flips by year |
 
-**Running total:** 10
+| H05 | Multi-day trend: average sign of 1/3/12-month returns, daily, swap-inclusive | 2026-09-25 | 1 | 0 | not run |
+
+**Running total:** 11
 
 ## Unconfirmed observations
 
