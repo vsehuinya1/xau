@@ -1,8 +1,17 @@
 # H09: Do sharp gold moves reverse when the dollar is quiet?
 
-**Status:** PRE-REGISTERED 2026-09-25 under the user's standing goal. Nothing
-had been run before this file was committed; results go in `H09-results.md`.
-No gold-only shock events had been examined before.
+**Status:** PRE-REGISTERED 2026-09-25 (commit 2b63dab) under the user's
+standing goal.
+**Run 2026-09-25: FAILED.**
+- **Dollar quiet (the test):** fading sharp gold moves while the dollar was
+  quiet gave t = −0.01 over 1,064 events. These moves reverse no more than any
+  big move does.
+- **Dollar confirmed (the diagnostic contrast):** fading them lost −0.16 ATR
+  (t = −1.85), and −0.41 ATR since 2023. So dollar-confirmed gold moves
+  *continue*, which agrees with H08's momentum lead. The events overlap with
+  H08's, so this is not independent confirmation.
+
+See `H09-results.md`.
 
 ## Question
 

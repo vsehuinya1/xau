@@ -23,7 +23,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H08 | Broad dollar shocks: USDX and USDJPY both ≥ k ATR in 5 min (k = 2, 3) → gold. Motivated by H07; a pass is provisional until the holdout | 2026-09-25 | 2 | 0 | **failed, close**: k = 2 t = 2.84 (C3, C4 pass); k = 3 t = 2.29 (C2, C3 pass) |
 
-| H09 | Quiet-dollar gold shocks: gold ≥ 3 ATR in 5 min while USDX and USDJPY \|z\| < 1 → fade | 2026-09-25 | 1 | 0 | not run |
+| H09 | Quiet-dollar gold shocks: gold ≥ 3 ATR in 5 min while USDX and USDJPY \|z\| < 1 → fade | 2026-09-25 | 1 | 0 | **failed**: t = −0.01; the dollar-confirmed contrast continued (fade t = −1.85), consistent with H08 |
 
 **Running total:** 28
 
