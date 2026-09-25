@@ -44,6 +44,43 @@ class Bars:
         return mfe, mae
 
 
+def measure(ev, bars, atr, sessions, hours, days, horizons, excursion_minutes, cost_fixed=0.11):
+    """Forward moves of events from their reference bar's open, signed by trade direction.
+
+    ev needs columns `ref` (M1 bar index; -1 drops the event) and `direction`.
+    ATR (a time-indexed series) is taken as of the reference bar's open. Adds
+    time, day, session, hour, weekday, prior (15-minute move, in ATR), cost,
+    move/atr/net per horizon, mfe/mae (in ATR) and the prior-move bin. Drops
+    events without a full forward window.
+    """
+    ev = ev[ev.ref >= 0].copy()
+    k, dirn = ev.ref.to_numpy(), ev.direction.to_numpy()
+    r, p_ref = bars.t[k], bars.open[k]
+    a = series_at(atr, r)
+    ev["atr"], ev["time"], ev["day"] = a, pd.to_datetime(r, utc=True), days[k]
+    ev["session"], ev["hour"] = sessions[k], hours[k]
+    ev["weekday"] = pd.DatetimeIndex(ev.day).day_name().str[:3]
+    ev["prior"] = dirn * (p_ref - bars.price_at(r - 15 * MIN)) / a
+    ev["cost"] = bars.spread[k] + cost_fixed
+    for h in horizons:
+        ev[f"move{h}"] = dirn * (bars.price_at(r + h * MIN) - p_ref)
+        ev[f"atr{h}"] = ev[f"move{h}"] / a
+        ev[f"net{h}"] = ev[f"move{h}"] - ev.cost
+    mfe, mae = bars.excursions(k, dirn, minutes=excursion_minutes)
+    ev["mfe"], ev["mae"] = mfe / a, mae / a
+    ev["bin"] = prior_bin(ev.prior.to_numpy())
+    keep = np.isfinite(ev.prior.to_numpy()) & np.isfinite(a) & (r + max(horizons + (excursion_minutes,)) * MIN <= bars.tc[-1])
+    return ev[keep]
+
+
+def add_excess(ev, cm, horizons, prefix="exc"):
+    """Event move minus the mean control move in its session x hour x bin cell."""
+    key = pd.MultiIndex.from_arrays([ev.session, ev.hour, ev.bin])
+    for h in horizons:
+        ev[f"{prefix}{h}"] = ev[f"atr{h}"].to_numpy() - cm[h].reindex(key).to_numpy()
+    return ev
+
+
 def series_at(series, times):
     """Value of a time-indexed series at or before each time (ns); NaN if none."""
     idx = series.index.as_unit("ns").asi8

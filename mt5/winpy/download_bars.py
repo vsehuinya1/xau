@@ -7,6 +7,8 @@ Output: <OUT>/<server>/<symbol>/M1/YYYY.npz with the raw MqlRates fields.
 Run with the Windows Python in the container:
   docker exec -i xau-mt5 bash -c 'wine "$WINEPREFIX/drive_c/Program Files/Python311/python.exe" -' < mt5/winpy/download_bars.py
 """
+import calendar
+import datetime as dt
 import os
 
 import MetaTrader5 as mt5
@@ -14,6 +16,9 @@ import numpy as np
 
 SYMBOL = os.environ.get("REC_SYMBOL", "XAUUSD")
 OUT = os.environ.get("BARS_OUT", "Z:/data/bars")
+# If set (YYYY-MM-DD), a download capped by MaxBars is accepted when its oldest
+# bar is still before this date: the history we need is complete.
+REQUIRED_FROM = os.environ.get("REQUIRED_FROM")
 
 assert mt5.initialize(timeout=60000), mt5.last_error()
 maxbars = mt5.terminal_info().maxbars
@@ -21,7 +26,12 @@ rates = mt5.copy_rates_from_pos(SYMBOL, mt5.TIMEFRAME_M1, 0, maxbars - 1)
 if rates is None or not len(rates):
     raise SystemExit(f"copy_rates_from_pos failed: {mt5.last_error()}")
 if len(rates) >= maxbars - 1:
-    raise SystemExit(f"got {len(rates)} bars, the MaxBars cap; raise it to reach the oldest bars")
+    oldest = int(rates["time"][0])
+    needed = calendar.timegm(dt.datetime.strptime(REQUIRED_FROM, "%Y-%m-%d").timetuple()) if REQUIRED_FROM else None
+    if needed is None or oldest > needed:
+        raise SystemExit(f"got {len(rates)} bars, the MaxBars cap; raise it to reach the oldest bars")
+    print(f"capped at {len(rates)} bars, oldest {dt.datetime.utcfromtimestamp(oldest):%Y-%m-%d}, "
+          f"before REQUIRED_FROM {REQUIRED_FROM}", flush=True)
 
 root = os.path.join(OUT, mt5.account_info().server, SYMBOL, "M1")
 os.makedirs(root, exist_ok=True)
