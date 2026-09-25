@@ -3,18 +3,26 @@ import numpy as np
 import pandas as pd
 
 
-def m5_bars(m1):
-    """M5 bars indexed by bin start. UTC 5-minute bins are also New York
-    5-minute bins, since the offset is a whole number of hours."""
-    return m1.resample("5min").agg(
+def tf_bars(m1, minutes):
+    """Bars of the given length, indexed by bin start. UTC bins are also New
+    York bins for 5, 15 and 30 minutes, since the offset is whole hours."""
+    return m1.resample(f"{minutes}min").agg(
         {"open": "first", "high": "max", "low": "min", "close": "last"}).dropna()
 
 
-def m5_atr(m1, n=14):
-    """Mean of the last n M5 true ranges, indexed by each M5 bar's close time."""
-    m5 = m5_bars(m1)
-    prev = m5.close.shift(1).fillna(m5.open)
-    tr = np.maximum(m5.high, prev) - np.minimum(m5.low, prev)
+def tf_atr(m1, minutes, n=14):
+    """Mean of the last n true ranges on the timeframe, indexed by each bar's close time."""
+    bars = tf_bars(m1, minutes)
+    prev = bars.close.shift(1).fillna(bars.open)
+    tr = np.maximum(bars.high, prev) - np.minimum(bars.low, prev)
     atr = tr.rolling(n).mean()
-    atr.index = atr.index + pd.Timedelta(minutes=5)
+    atr.index = atr.index + pd.Timedelta(minutes=minutes)
     return atr.dropna()
+
+
+def m5_bars(m1):
+    return tf_bars(m1, 5)
+
+
+def m5_atr(m1, n=14):
+    return tf_atr(m1, 5, n)
