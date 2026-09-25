@@ -1,7 +1,9 @@
 # H01: What happens when gold pushes through an obvious level?
 
-**Status:** PRE-REGISTERED 2026-09-25, approved by the user. Nothing had been run
-before this file was committed; results go in `H01-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit ab8ba89), approved by the user.
+**Run 2026-09-25: FAILED.** None of the 6 tests passed; the best t was 1.33
+against the required 3. The level family (A and B) is dropped. See
+`H01-results.md` and the observation in `TRIALS.md`.
 **Covers:** candidates A (sweep and reclaim) and B (break and retest).
 
 ## Question
