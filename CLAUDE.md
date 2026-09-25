@@ -17,7 +17,10 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 
 ## Data gotchas
 
-- One-minute data from histdata.com is timestamped in **EST with no daylight-saving shift**, not UTC. Convert before any session or event logic. This bug once invalidated results.
+- One-minute data from histdata.com is timestamped in **New York local time, including daylight saving**, whatever its "EST, no DST" label says.
+  - **Evidence:** checked on 2012–2017 US jobs reports for XAUUSD, EURUSD and USDJPY.
+  - **Old research:** its "EST" fix was an hour wrong every summer.
+  - **Loader:** `xau.histdata.load_histdata` converts correctly.
 - Treat any out-of-sample profit factor above about 3 as a bug or too few trades until you've checked it.
 - MT5 timestamps (tick `time`/`time_msc` and bar `time`) are in the broker's server time, not UTC, even though they look like Unix times. Always convert them with `xau.servertime.server_to_utc`, never by hand.
   - **The rule:** Pepperstone's server runs at New York time + 7 hours.

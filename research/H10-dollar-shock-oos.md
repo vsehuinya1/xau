@@ -65,6 +65,18 @@ fixed in advance, on fresh data; it is not a search.
   - **Final checks:** the holdout, then paper trading.
 - **If not confirmed:** the lead is dropped.
 
+## Correction before running
+
+- **What was wrong:** the Data section assumed histdata's documented "EST
+  without daylight saving". Check mode showed the files are really in New York
+  local time, including daylight saving, for all three pairs.
+- **Evidence:** read as fixed EST, the 08:30 New York jobs-report spike landed
+  at 09:30 in summers and 08:30 in winters, in 2012–2017. Gold's daily-break
+  hour was also not empty.
+- **Fix:** the loader converts from New York local time. This was corrected
+  before any outcome was computed. The three pairs were always aligned with
+  each other; the error only affected session and hour labels in summer.
+
 ## Trial count
 
 2 tests, so the running total becomes 30. Diagnostics: the 5- and 30-minute
