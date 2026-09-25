@@ -19,8 +19,27 @@ standing goal.
 - **H = 15** fails the every-era rule because 2021–22 was negative.
 - **Caveat:** these net figures are in-sample. The 2018–2025 data were used
   while exploring H07–H09, and H10 confirmed the effect's existence out of
-  sample but not its net profit. The holdout has not been run; it is awaiting
-  the user's approval.
+  sample but not its net profit.
+- **In-sample under news-heavy costs:** H = 30 made +$0.38/oz per trade
+  (t = 1.64). By era: −0.08, +0.27, +0.75.
+
+**Holdout, 2026-09-25: PASSED.** The user approved it ("Costs, then holdout").
+It ran once, with H = 30 and rules unchanged, on 2025-10-01 to 2026-09-24
+(`H11-holdout.md`).
+
+| | News-heavy costs | Bar-field costs |
+|---|---|---|
+| Net per trade | +$3.96/oz (t = 1.96) | +$4.19/oz (t = 2.08) |
+| Trades | 116 | 116 |
+| Total | +$460/oz | +$486/oz |
+| Sharpe | 1.96 | 2.08 |
+| Max drawdown | $145/oz | $142/oz |
+
+- **Why the dollar figures are larger:** gold was far more volatile in the
+  holdout, and the effect scales with volatility.
+- **It's lumpy:** 5 of 12 months lost, and the gains came mostly from Jan,
+  Mar, Apr and Jun 2026.
+- **Next:** paper trading on the demo account, with real fills.
 
 See `H11-results.md`.
 

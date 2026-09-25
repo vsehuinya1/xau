@@ -15,6 +15,30 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - "Smart Money Concepts" signals (market structure breaks, fair value gaps, order blocks). None showed a proven edge.
 - Market Diagnostics Framework (D01–D11, an 8-year run). Its findings weren't carried over.
 
+## Current strategy: dollar-shock momentum (research/H07–H11)
+
+**The rule:** when EURUSD and USDJPY both move at least 3 × their M5 ATR in 5
+minutes in the same dollar direction, trade gold against the dollar at the
+next M1 open and exit 30 minutes later. The code is in `xau/dollar_shock.py`.
+
+**Evidence:**
+- **Found** in 2018–2025 (H07–H09).
+- **Confirmed** on 2009–2017 histdata never seen before: t = 6.5 (H10).
+- **In-sample profit:** +$0.38/oz per trade under harsh news-time costs.
+- **Holdout passed:** +$3.96/oz per trade over 116 trades from Oct 2025 to
+  Sep 2026, t = 1.96 (H11).
+
+**Risks:**
+- **Fills at US releases:** the M1 bar spread field understates news-time
+  spreads.
+- **Lumpy returns:** 5 of 12 holdout months lost.
+- **Changing strength:** the effect varied over time.
+
+**Status:** next is paper trading on the demo account with real fills.
+
+The holdout has now been used for this strategy. Further research can't treat
+Oct 2025 to Sep 2026 as unseen.
+
 ## Data gotchas
 
 - One-minute data from histdata.com is timestamped in **New York local time, including daylight saving**, whatever its "EST, no DST" label says.
