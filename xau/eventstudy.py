@@ -74,11 +74,12 @@ def control_means(bars, atr, sessions, hours, keep, horizons):
     return both.groupby(["session", "hour", "bin"])[list(horizons)].mean(), int(ok.sum())
 
 
-def evaluate(cell, horizons, primary):
+def evaluate(cell, horizons, primary, split="session", groups=SESSIONS):
     """The five pre-registered pass criteria for one test, plus its details.
 
-    cell needs columns time (UTC), day, session, cost, and per horizon h:
-    move{h} ($), atr{h} and exc{h} (ATR), net{h} ($ after costs).
+    cell needs columns time (UTC), day, cost, the `split` column, and per
+    horizon h: move{h} ($), atr{h} and exc{h} (ATR), net{h} ($ after costs).
+    Criterion 4 drops each of `groups` of the `split` column in turn.
     """
     def between(f, a, b):
         return f[(f.time >= pd.Timestamp(a, tz="UTC")) & (f.time < pd.Timestamp(b, tz="UTC"))]
@@ -87,7 +88,7 @@ def evaluate(cell, horizons, primary):
     recent = between(cell, *RECENT)
     t = clustered_t(cell[exc], cell.day)
     subs = {name: between(cell, a, b)[exc].mean() for name, a, b in SUBPERIODS}
-    drops = {s: clustered_t(cell[cell.session != s][exc], cell[cell.session != s].day) for s in SESSIONS}
+    drops = {s: clustered_t(cell[cell[split] != s][exc], cell[cell[split] != s].day) for s in groups}
     worst = min(drops, key=lambda s: drops[s])
     trimmed = recent[recent[net] < recent[net].quantile(0.99)][net].mean()
     crit = [t >= 3, recent[net].mean() > 0, all(v > 0 for v in subs.values()), drops[worst] >= 2, trimmed > 0]
@@ -99,7 +100,7 @@ def evaluate(cell, horizons, primary):
                 f"2024-25 move {primary}m $": recent[f"move{primary}"].mean(), "2024-25 cost $": recent.cost.mean(),
                 f"2024-25 net {primary}m $": recent[net].mean()})
     row.update({f"excess {n}": v for n, v in subs.items()})
-    row.update({"t without best session": drops[worst], "best session": worst, "2024-25 net, top 1% cut": trimmed})
+    row.update({f"t without best {split}": drops[worst], f"best {split}": worst, "2024-25 net, top 1% cut": trimmed})
     row.update({f"C{n + 1}": bool(c) for n, c in enumerate(crit)})
     row["PASS"] = all(crit)
     return row
