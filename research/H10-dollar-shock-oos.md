@@ -1,8 +1,27 @@
 # H10: Does dollar-shock momentum hold up out of sample (2009–2017)?
 
-**Status:** PRE-REGISTERED 2026-09-25 under the user's standing goal. Nothing
-had been run before this file was committed, and none of the 2009–2017
-histdata had been examined. Results go in `H10-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit 2f0522d) under the user's
+standing goal.
+**Run 2026-09-25: CONFIRMED, the first confirmed effect of the programme.**
+
+On 2009–2017 data never examined before:
+
+| | Events | t at 15 min | Excess at 15 min |
+|---|---|---|---|
+| k = 2 | 3,056 | 6.46 | 0.27 ATR |
+| k = 3 | 771 | 5.12 | 0.60 ATR |
+
+- **Consistency:** positive in each of 2009–11, 2012–14 and 2015–17, and in
+  every session with a meaningful sample.
+- **Growth:** the effect builds from 5 to 30 minutes and scales with shock
+  size.
+- **Cross-feed diagnostic** (`H10-crossfeed.md`): the same definition on
+  histdata and on Pepperstone over 2018–2024 gives the same events and the
+  same gold co-movement. histdata shows a smaller effect (0.06 against 0.10
+  ATR at k = 2), so it doesn't inflate the result. The effect was stronger in
+  2009–2017 and is weaker but present since 2018.
+
+See `H10-results.md`.
 
 ## Purpose
 

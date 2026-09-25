@@ -25,7 +25,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H09 | Quiet-dollar gold shocks: gold ≥ 3 ATR in 5 min while USDX and USDJPY \|z\| < 1 → fade | 2026-09-25 | 1 | 0 | **failed**: t = −0.01; the dollar-confirmed contrast continued (fade t = −1.85), consistent with H08 |
 
-| H10 | Out-of-sample check of dollar-shock momentum on 2009–2017 histdata (EURUSD + USDJPY shocks, k = 2, 3) | 2026-09-25 | 2 | 0 | not run |
+| H10 | Out-of-sample check of dollar-shock momentum on 2009–2017 histdata (EURUSD + USDJPY shocks, k = 2, 3) | 2026-09-25 | 2 | 0 | **CONFIRMED**: k = 2 t = 6.46, k = 3 t = 5.12 on fresh data, consistent in all sub-periods; the cross-feed check rules out a histdata artifact |
 
 **Running total:** 30
 
