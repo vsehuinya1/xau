@@ -13,7 +13,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 | H02 | Trend pullback: M5 EMA trend, pullback to 20-EMA, M1 trigger | 2026-09-25 | 1 | 0 | **failed**: t = −0.09; no better than random, even within trends |
 | H03 | Opening-range breakout: London open, NY 08:30 | 2026-09-25 | 2 | 0 | **failed**: London t = 1.55 (sign flips by year), NY t = −0.66 |
 
-| H04 | Time of day: long Asia 19:00–03:00, short NY 08:00–16:00 (trend-neutral) | 2026-09-25 | 1 | 0 | not run |
+| H04 | Time of day: long Asia 19:00–03:00, short NY 08:00–16:00 (trend-neutral) | 2026-09-25 | 1 | 0 | **failed**: +0.45 bp/day, t = 0.25; sign flips by year |
 
 **Running total:** 10
 

@@ -1,8 +1,17 @@
 # H04: Does gold rise in Asian hours and fall in New York hours?
 
-**Status:** PRE-REGISTERED 2026-09-25, approved by the user ("Yes"). Nothing had
-been run, and no hour-of-day returns had been looked at, before this file was
-committed. Results go in `H04-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit 4707015), approved by the user.
+**Run 2026-09-25: FAILED.**
+- **Result:** mean S = +0.45 bp a day, t = 0.25, over 1,900 days.
+- **By year:** −0.4, −1.2, −2.4, +7.6, −2.1, +1.0, +3.5, −3.6 bp, with no
+  consistent sign.
+- **The reported pattern:** gold was slightly up, not down, in New York hours,
+  so "Asia up, New York down" isn't in the 2018–2025 data.
+- **Skipped days:** 101 days had no 16:00 New York bar and were skipped as
+  pre-registered. Most are winter 2017/18, when Pepperstone closed at 15:59
+  New York; the rest are holiday early closes.
+
+See `H04-results.md`.
 **Covers:** direction 1 (time of day), chosen by the user on 2026-09-25.
 
 ## Question

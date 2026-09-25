@@ -136,7 +136,7 @@ def main():
         for year, g in s.groupby("year"):
             rows[(leg, year)] = summarize(g, leg)
         rows[(leg, "all")] = summarize(s, leg)
-    out.append(md(pd.DataFrame(rows).T))
+    out.append(md(pd.DataFrame(rows).T.rename_axis(["leg", "year"])))
     (ROOT / "research" / "H04-results.md").write_text("\n".join(out) + "\n")
     print(md(verdict.rename_axis("test")))
 
