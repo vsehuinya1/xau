@@ -1,7 +1,13 @@
 # H03: Do opening-range breakouts at the London open and after the 08:30 NY data keep going?
 
-**Status:** PRE-REGISTERED 2026-09-25, approved by the user ("Yes"). Nothing had
-been run before this file was committed; results go in `H03-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit 2ce29f4), approved by the user.
+**Run 2026-09-25: FAILED, both tests.**
+- **London:** t = 1.55. It was positive in all three sub-periods, but weak.
+  The sign flipped almost every year, it lost after costs in 2024–25, and t
+  fell to 0.7 without Tuesdays.
+- **New York:** t = −0.66.
+
+Candidates A–D are exhausted. See `H03-results.md`.
 **Covers:** candidate D (opening-range breakout).
 
 ## Question
