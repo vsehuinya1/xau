@@ -15,9 +15,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from xau.bars import load_m1  # noqa: E402
-from xau.eventstudy import MIN, Bars, clustered_t, control_means, prior_bin, series_at  # noqa: E402
+from xau.eventstudy import MIN, Bars, clustered_t, control_means, evaluate, prior_bin, series_at  # noqa: E402
 from xau.features import m5_atr, m5_bars  # noqa: E402
 from xau.levels import daily_levels  # noqa: E402
+from xau.report import md  # noqa: E402
 from xau.sessions import NY, SESSIONS, session, trading_day  # noqa: E402
 
 HORIZONS = (15, 30, 60)
@@ -27,15 +28,7 @@ MAX_WAIT = 5          # minutes; a later reference bar means the market was clos
 ROUND = 50.0          # round-number spacing, $
 COST_FIXED = 0.11     # $/oz per round trip: commission 0.09 + slippage 0.02
 NEAR_LEVEL_ATR = 0.5  # controls must be at least this far from any level
-SUBPERIODS = [("2018-20", "2018-01-01", "2021-01-01"),
-              ("2021-22", "2021-01-01", "2023-01-01"),
-              ("2023-Sep25", "2023-01-01", "2025-10-01")]
-RECENT = ("2024-01-01", "2025-10-01")
 NEVER = np.iinfo(np.int64).max
-
-
-def utc(s):
-    return pd.Timestamp(s, tz="UTC")
 
 
 def load():
@@ -130,7 +123,8 @@ def measure(ev, d):
         ev[f"move{h}"] = dirn * (bars.price_at(r + h * MIN) - p_ref)
         ev[f"atr{h}"] = ev[f"move{h}"] / a
     ev["cost"] = bars.spread[k] + COST_FIXED
-    ev["net30"] = ev.move30 - ev.cost
+    for h in HORIZONS:
+        ev[f"net{h}"] = ev[f"move{h}"] - ev.cost
     mfe, mae = bars.excursions(k, dirn)
     ev["mfe"], ev["mae"] = mfe / a, mae / a
     ev["bin"] = prior_bin(ev.prior.to_numpy())
@@ -157,47 +151,6 @@ def add_excess(ev, cm):
     return ev[np.isfinite(ev.exc30.to_numpy())]
 
 
-def evaluate(cell):
-    between = lambda f, a, b: f[(f.time >= utc(a)) & (f.time < utc(b))]  # noqa: E731
-    recent = between(cell, *RECENT)
-    t30 = clustered_t(cell.exc30, cell.day)
-    subs = {name: between(cell, a, b).exc30.mean() for name, a, b in SUBPERIODS}
-    drops = {s: clustered_t(cell[cell.session != s].exc30, cell[cell.session != s].day) for s in SESSIONS}
-    worst = min(drops, key=lambda s: drops[s])
-    trimmed = recent[recent.net30 < recent.net30.quantile(0.99)].net30.mean()
-    crit = [t30 >= 3, recent.net30.mean() > 0, all(v > 0 for v in subs.values()), drops[worst] >= 2, trimmed > 0]
-    row = {"events": len(cell), "days": cell.day.nunique()}
-    for h in HORIZONS:
-        row[f"excess {h}m (ATR)"] = cell[f"exc{h}"].mean()
-        row[f"t {h}m"] = clustered_t(cell[f"exc{h}"], cell.day)
-    row.update({"move 30m (ATR)": cell.atr30.mean(), "2024-25 events": len(recent),
-                "2024-25 move 30m $": recent.move30.mean(), "2024-25 cost $": recent.cost.mean(),
-                "2024-25 net 30m $": recent.net30.mean()})
-    row.update({f"excess {n}": v for n, v in subs.items()})
-    row.update({"t without best session": drops[worst], "best session": worst, "2024-25 net, top 1% cut": trimmed})
-    row.update({f"C{n + 1}": bool(c) for n, c in enumerate(crit)})
-    row["PASS"] = all(crit)
-    return row
-
-
-def fmt(v):
-    if isinstance(v, (bool, np.bool_)):
-        return "yes" if v else "no"
-    if isinstance(v, (float, np.floating)):
-        return "" if np.isnan(v) else f"{v:.0f}" if float(v).is_integer() and abs(v) >= 10 else f"{v:.3f}"
-    return str(v)
-
-
-def md(df):
-    """DataFrame as a markdown table; tuple labels are joined with ' / '."""
-    label = lambda x: " / ".join(map(str, x)) if isinstance(x, (tuple, list)) else str(x)  # noqa: E731
-    cols = [label(list(df.index.names) if df.index.nlevels > 1 else df.index.name or "")] + [label(c) for c in df.columns]
-    lines = ["| " + " | ".join(cols) + " |", "|" + "---|" * len(cols)]
-    for idx, row in df.iterrows():
-        lines.append("| " + " | ".join([label(idx)] + [fmt(v) for v in row]) + " |")
-    return "\n".join(lines)
-
-
 def check(d):
     ev = classify(find_pushes(d), d)
     print(pd.crosstab(ev.kind, ev.path, margins=True))
@@ -222,7 +175,7 @@ def main():
     pushes = classify(find_pushes(d), d)
     cm, n_controls = controls(d)
     ev = add_excess(measure(pushes, d), cm)
-    cells = pd.DataFrame({key: evaluate(g) for key, g in ev.groupby(["kind", "path"])}).T
+    cells = pd.DataFrame({key: evaluate(g, HORIZONS, 30) for key, g in ev.groupby(["kind", "path"])}).T
     cells.index.names = ["level", "path"]
 
     out = [f"# H01 results\n\nRun {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC on M1 bars "

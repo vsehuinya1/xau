@@ -3,8 +3,15 @@ controls and clustered t-statistics. Times are int64 nanoseconds (UTC)."""
 import numpy as np
 import pandas as pd
 
+from xau.sessions import SESSIONS
+
 MIN = 60_000_000_000  # one minute in nanoseconds
 BIN_EDGES = [-2, -1, -0.5, -0.25, 0, 0.25, 0.5, 1, 2]  # prior move, in ATR
+# Pre-registered in research/H01-level-pokes.md and reused by later hypotheses.
+SUBPERIODS = [("2018-20", "2018-01-01", "2021-01-01"),
+              ("2021-22", "2021-01-01", "2023-01-01"),
+              ("2023-Sep25", "2023-01-01", "2025-10-01")]
+RECENT = ("2024-01-01", "2025-10-01")
 
 
 class Bars:
@@ -65,6 +72,37 @@ def control_means(bars, atr, sessions, hours, keep, horizons):
         frames.append(f)
     both = pd.concat(frames)
     return both.groupby(["session", "hour", "bin"])[list(horizons)].mean(), int(ok.sum())
+
+
+def evaluate(cell, horizons, primary):
+    """The five pre-registered pass criteria for one test, plus its details.
+
+    cell needs columns time (UTC), day, session, cost, and per horizon h:
+    move{h} ($), atr{h} and exc{h} (ATR), net{h} ($ after costs).
+    """
+    def between(f, a, b):
+        return f[(f.time >= pd.Timestamp(a, tz="UTC")) & (f.time < pd.Timestamp(b, tz="UTC"))]
+
+    exc, net = f"exc{primary}", f"net{primary}"
+    recent = between(cell, *RECENT)
+    t = clustered_t(cell[exc], cell.day)
+    subs = {name: between(cell, a, b)[exc].mean() for name, a, b in SUBPERIODS}
+    drops = {s: clustered_t(cell[cell.session != s][exc], cell[cell.session != s].day) for s in SESSIONS}
+    worst = min(drops, key=lambda s: drops[s])
+    trimmed = recent[recent[net] < recent[net].quantile(0.99)][net].mean()
+    crit = [t >= 3, recent[net].mean() > 0, all(v > 0 for v in subs.values()), drops[worst] >= 2, trimmed > 0]
+    row = {"events": len(cell), "days": cell.day.nunique()}
+    for h in horizons:
+        row[f"excess {h}m (ATR)"] = cell[f"exc{h}"].mean()
+        row[f"t {h}m"] = clustered_t(cell[f"exc{h}"], cell.day)
+    row.update({f"move {primary}m (ATR)": cell[f"atr{primary}"].mean(), "2024-25 events": len(recent),
+                f"2024-25 move {primary}m $": recent[f"move{primary}"].mean(), "2024-25 cost $": recent.cost.mean(),
+                f"2024-25 net {primary}m $": recent[net].mean()})
+    row.update({f"excess {n}": v for n, v in subs.items()})
+    row.update({"t without best session": drops[worst], "best session": worst, "2024-25 net, top 1% cut": trimmed})
+    row.update({f"C{n + 1}": bool(c) for n, c in enumerate(crit)})
+    row["PASS"] = all(crit)
+    return row
 
 
 def clustered_t(x, groups):
