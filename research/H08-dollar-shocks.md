@@ -1,7 +1,18 @@
 # H08: Do broad dollar shocks move gold enough to trade?
 
-**Status:** PRE-REGISTERED 2026-09-25 under the user's standing goal. Nothing
-had been run before this file was committed; results go in `H08-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit 1a28112) under the user's
+standing goal.
+**Run 2026-09-25: FAILED, but closer than anything before it.**
+- **k = 2:** t = 2.84, just short of 3, but it passes C3 and C4.
+- **k = 3:** t = 2.29. It passes C2 (+$0.25/oz after costs in 2024–25) and
+  C3.
+- **Unconfirmed diagnostic:** the follow-through grows with the size of the
+  shock. When the smaller of the two z-scores is ≥ 4, gold continued
+  +0.7–0.9 ATR over 15 minutes, +$0.9–1.1/oz after costs. It also continued
+  more when gold had already moved with the dollar, which looks like news
+  momentum.
+
+See `H08-results.md` and `TRIALS.md`.
 
 **Caveat:** this hypothesis was motivated by H07's result on the same
 2018–2025 data. A pass here is therefore provisional. It must also pass on

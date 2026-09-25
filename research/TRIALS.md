@@ -21,7 +21,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H07 | Leading markets: USDX, EURUSD, USDJPY, silver 5-min moves → gold next 15 min | 2026-09-25 | 4 | 0 | **failed** on costs: USDJPY t = 3.11 and consistent (C1, C3), USDX t = 2.32, but the effect is about half the round-trip cost |
 
-| H08 | Broad dollar shocks: USDX and USDJPY both ≥ k ATR in 5 min (k = 2, 3) → gold. Motivated by H07; a pass is provisional until the holdout | 2026-09-25 | 2 | 0 | not run |
+| H08 | Broad dollar shocks: USDX and USDJPY both ≥ k ATR in 5 min (k = 2, 3) → gold. Motivated by H07; a pass is provisional until the holdout | 2026-09-25 | 2 | 0 | **failed, close**: k = 2 t = 2.84 (C3, C4 pass); k = 3 t = 2.29 (C2, C3 pass) |
 
 **Running total:** 27
 
@@ -38,3 +38,14 @@ Pursuing one adds every split it was picked from to the trial count.
   The pooled effect was strongest in 2018–20 and has been about zero since
   2023, so it may not be a lasting effect. It would count as about 40 trials
   if pursued.
+- **From H08's diagnostics** (shock-size and followed splits, about 12 cells):
+  gold continues in the direction of large broad dollar shocks, and the effect
+  grows with shock size.
+  - **Largest shocks:** when both USDX and USDJPY moved ≥ 4 ATR, 202 events
+    (k = 2 test) gave +0.88 ATR at 15 minutes, +$1.11/oz after costs,
+    t = 2.6.
+  - **Why it's plausible:** momentum after US data releases.
+  - **Why it's unconfirmed:** it was picked from diagnostics.
+  - **Confirming it:** it needs data not yet examined. The 12-month holdout
+    holds only about 25 such events, which is too few on its own, so forward
+    paper trading is needed as well.
