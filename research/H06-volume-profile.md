@@ -1,8 +1,16 @@
 # H06: Do volume-profile levels (prior-day POC, VAH, VAL) give gold an edge on M5/M15?
 
-**Status:** PRE-REGISTERED 2026-09-25, approved by the user ("Yes, continue").
-Nothing had been run before this file was committed; results go in
-`H06-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit 41465d9), approved by the user.
+**Run 2026-09-25: FAILED, all 10 tests.**
+- **Best result:** the M15 80% rule at t = 1.28, against the required 3.
+- **Part A:** POC and value-area-edge reactions were all within t = ±1.6 on
+  both M5 and M15.
+- **The 80% rule:** price reached the far edge first in only 31% of trades.
+  It closed back outside first in 57%, and neither happened by 17:00 in 12%.
+- **Excursions:** as in H01–H03, favourable and adverse moves were about
+  equal.
+
+See `H06-results.md`.
 **Origin:** the user saw volume-profile levels used in a video about BTC and
 asked for our own version on gold, with signals on M5 and M15 and both setups.
 

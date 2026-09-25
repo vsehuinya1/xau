@@ -17,7 +17,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H05 | Multi-day trend: average sign of 1/3/12-month returns, daily, swap-inclusive | 2026-09-25 | 1 | 0 | **failed**: −1.55%/yr net, t = −0.66; timing alpha vs buy-and-hold −4.9%/yr |
 
-| H06 | Volume profile: prior-day POC/VAH/VAL reactions (8) and the 80% rule (2), M5 and M15 | 2026-09-25 | 10 | 0 | not run |
+| H06 | Volume profile: prior-day POC/VAH/VAL reactions (8) and the 80% rule (2), M5 and M15 | 2026-09-25 | 10 | 0 | **failed**: best t = 1.28; the "80% rule" reached the far edge first 31% of the time |
 
 **Running total:** 21
 
