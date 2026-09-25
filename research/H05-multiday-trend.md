@@ -1,8 +1,18 @@
 # H05: Does gold's multi-day trend pay after swap and trading costs?
 
-**Status:** PRE-REGISTERED 2026-09-25, approved by the user ("As drafted"),
-including the t ≥ 2 bar. Nothing had been run, and no pre-2018 returns had been
-looked at, before this file was committed. Results go in `H05-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit f66ee9a), approved by the user
+with the t ≥ 2 bar.
+**Run 2026-09-25: FAILED.**
+- **Result:** net −1.55%/yr, t = −0.66.
+- **Where the money went:** gross +2.8%/yr, then costs −2.0% (28 position
+  changes a year) and swap −2.4%.
+- **Against simply holding gold:** buy-and-hold made +5.9%/yr net, so the
+  trend timing's alpha over it was −4.9%/yr (t = −2.3).
+- **By lookback:** only the 12-month lookback broke even (+0.16%/yr).
+- **By era:** it lost in 1999–2007 and 2008–16, was flat in 2017–25, and made
+  money only since 2022. Only C2 passed.
+
+See `H05-results.md`.
 **Covers:** direction 4 (a higher-timeframe signal with M1/M5 execution),
 chosen by the user on 2026-09-25 along with allowing overnight holding.
 
