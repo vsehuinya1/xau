@@ -39,6 +39,12 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - Two versions are pinned deliberately:
   - **Wine 10.0 stable.** Under Wine 11, the Python IPC times out.
   - **numpy 1.26.4.** numpy 2.x calls `ucrtbase.crealf`, which Wine 10 doesn't have.
+- The tick recorder (`mt5/winpy/recorder.py`) runs inside the container whenever `MT5_LOGIN` is set. It archives each completed server-time hour of XAUUSD ticks to `data/ticks/<server>/<symbol>/YYYY/MM/DD/HH.npz`, as raw MT5 fields in server time.
+  - An empty file means the market was closed. A missing file means that hour hasn't been archived.
+  - Gaps shorter than the server's roughly 4-week retention refill themselves.
+  - `offset_log.csv` records the observed server-clock offset every hour.
+  - `mt5/winpy/verify.py` re-fetches the archived hours and compares them.
+- On the Linux side, load ticks with `xau.ticks.load_ticks(start_utc, end_utc)`. It converts server time to UTC and raises an error if any hour in the range hasn't been archived. Set up the environment with `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
 - `mt5.initialize()` works only once the terminal is logged in to an account. Before that, it returns an IPC timeout (-10005). To run a script with the Windows Python: `docker exec -i xau-mt5 bash -c 'wine "$WINEPREFIX/drive_c/Program Files/Python311/python.exe" -' < script.py`.
 
 ## Decisions (2026-09-25)
@@ -47,3 +53,5 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - **Strategy:** research a new edge using a sound process, then build the bot around whatever holds up.
 - **Timeframe:** intraday (M1–M15), flat by the end of the day.
 - **Launch:** a paper/demo account first, with full logging. Real money only after a set evaluation period.
+- **Broker account:** Pepperstone. The demo is a Razor account on `Pepperstone-Demo` (Pepperstone Group Limited), in USD. Model costs as raw spread plus a commission per lot; the commission is still to be measured.
+- **Price history:** Pepperstone ticks recorded by us from 2026-08-28 onward. Long history comes from Dukascopy ticks, with Pepperstone's own one-minute bars as a cross-check. Dukascopy answered 429/503 to this VPS on 2026-09-25, so download slowly and back off.
