@@ -19,6 +19,9 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 
 - One-minute data from histdata.com is timestamped in **EST with no daylight-saving shift**, not UTC. Convert before any session or event logic. This bug once invalidated results.
 - Treat any out-of-sample profit factor above about 3 as a bug or too few trades until you've checked it.
+- MT5 timestamps (tick `time`/`time_msc` and bar `time`) are in the broker's server time, not UTC, even though they look like Unix times. Pepperstone-Demo was exactly UTC+3 on 2026-09-25. It is probably UTC+2 in northern winter; verify that after the DST change.
+- On Pepperstone-Demo, tick history goes back only about 4 weeks: when checked on 2026-09-25, the earliest tick was 2026-08-28. One-minute bars are capped by the terminal's MaxBars setting (100,000 bars, about 3 months). Daily bars go back to 2012.
+- XAUUSD at Pepperstone: 100 oz per lot, 0.01 lot minimum, and a $0.01 move is worth $1 per lot.
 
 ## Conventions
 
@@ -36,7 +39,7 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - Two versions are pinned deliberately:
   - **Wine 10.0 stable.** Under Wine 11, the Python IPC times out.
   - **numpy 1.26.4.** numpy 2.x calls `ucrtbase.crealf`, which Wine 10 doesn't have.
-- `mt5.initialize()` returns an IPC timeout (-10005) while no account is logged in. Whether it works once an account is logged in hasn't been tested yet.
+- `mt5.initialize()` works only once the terminal is logged in to an account. Before that, it returns an IPC timeout (-10005). To run a script with the Windows Python: `docker exec -i xau-mt5 bash -c 'wine "$WINEPREFIX/drive_c/Program Files/Python311/python.exe" -' < script.py`.
 
 ## Decisions (2026-09-25)
 
