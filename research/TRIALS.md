@@ -21,7 +21,9 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H07 | Leading markets: USDX, EURUSD, USDJPY, silver 5-min moves → gold next 15 min | 2026-09-25 | 4 | 0 | **failed** on costs: USDJPY t = 3.11 and consistent (C1, C3), USDX t = 2.32, but the effect is about half the round-trip cost |
 
-**Running total:** 25
+| H08 | Broad dollar shocks: USDX and USDJPY both ≥ k ATR in 5 min (k = 2, 3) → gold. Motivated by H07; a pass is provisional until the holdout | 2026-09-25 | 2 | 0 | not run |
+
+**Running total:** 27
 
 ## Unconfirmed observations
 
