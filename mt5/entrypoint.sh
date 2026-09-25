@@ -56,11 +56,12 @@ fi
 
 # Optional auto-login from MT5_LOGIN / MT5_PASSWORD / MT5_SERVER (mt5/.env),
 # through MT5's startup config file. KeepPrivate saves the login in the prefix.
+# MaxBars also caps how much history copy_rates_* can return (default 100k).
 TERMINAL_ARGS=()
 if [[ -n "${MT5_LOGIN:-}" ]]; then
     : "${MT5_PASSWORD:?MT5_PASSWORD must be set with MT5_LOGIN}"
     : "${MT5_SERVER:?MT5_SERVER must be set with MT5_LOGIN}"
-    (umask 077; printf '[Common]\r\nLogin=%s\r\nPassword=%s\r\nServer=%s\r\nKeepPrivate=1\r\nNewsEnable=0\r\n' \
+    (umask 077; printf '[Common]\r\nLogin=%s\r\nPassword=%s\r\nServer=%s\r\nKeepPrivate=1\r\nNewsEnable=0\r\n[Charts]\r\nMaxBars=5000000\r\n' \
         "$MT5_LOGIN" "$MT5_PASSWORD" "$MT5_SERVER" > /tmp/mt5-startup.ini)
     TERMINAL_ARGS+=('/config:Z:\tmp\mt5-startup.ini')
 fi
@@ -70,4 +71,16 @@ wine "$TERMINAL" "${TERMINAL_ARGS[@]}" &
 # rather than the first terminal process. wineserver -w returns at once if
 # the server isn't up yet, so wait for the terminal to appear first.
 for _ in $(seq 60); do pgrep -f terminal64.exe >/dev/null && break; sleep 1; done
+
+# Tick recorder (mt5/winpy, mounted at /opt/xau), restarted whenever it exits.
+# It waits for the terminal to log in by itself.
+if [[ -n "${MT5_LOGIN:-}" && -f /opt/xau/recorder.py ]]; then
+    (
+        while true; do
+            wine "$PYTHON" Z:/opt/xau/recorder.py || echo "recorder exited with $?"
+            sleep 60
+        done
+    ) &
+fi
+
 exec wineserver -w

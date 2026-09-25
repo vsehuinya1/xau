@@ -20,6 +20,8 @@ services:
       MT5_SERVER: ${MT5_SERVER:-}
     volumes:
       - wine:/home/mt5/.wine
+      - ./winpy:/opt/xau:ro           # Windows-side Python (recorder)
+      - ../data/ticks:/data/ticks     # recorder output; owned by uid 1001
 
 volumes:
   wine:
