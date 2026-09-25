@@ -27,7 +27,9 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H10 | Out-of-sample check of dollar-shock momentum on 2009–2017 histdata (EURUSD + USDJPY shocks, k = 2, 3) | 2026-09-25 | 2 | 0 | **CONFIRMED**: k = 2 t = 6.46, k = 3 t = 5.12 on fresh data, consistent in all sub-periods; the cross-feed check rules out a histdata artifact |
 
-**Running total:** 30
+| H11 | Dollar-shock momentum strategy: k = 3 EURUSD+USDJPY shocks, gold against the dollar, time exit H = 15 or 30 min, real costs | 2026-09-25 | 2 | 0 | not run |
+
+**Running total:** 32
 
 ## Unconfirmed observations
 
