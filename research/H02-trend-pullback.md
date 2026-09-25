@@ -1,7 +1,10 @@
 # H02: Does buying pullbacks in an M5 trend beat random timing?
 
-**Status:** PRE-REGISTERED 2026-09-25, approved by the user ("Continue"). Nothing
-had been run before this file was committed; results go in `H02-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit c1933a0), approved by the user.
+**Run 2026-09-25: FAILED.** Across 99,699 events, t = −0.09 at 60 minutes and
+the mean move was 0.001 ATR, the same as random timing. The entries were
+slightly worse than random moments in the same trend, and there was no
+session or side effect. Candidate C is dropped. See `H02-results.md`.
 **Covers:** candidate C (trend pullback). Shorts mirror longs throughout.
 
 ## Question

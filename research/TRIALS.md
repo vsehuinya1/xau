@@ -10,7 +10,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 | ID  | Hypothesis | Registered | Primary tests | Other trials | Result |
 |-----|------------|------------|---------------|--------------|--------|
 | H01 | Level pushes: sweep-and-reclaim vs break-and-retest | 2026-09-25 | 6 | 0 | **failed**: best t = 1.33 (needed 3); nothing profitable after costs and consistent |
-| H02 | Trend pullback: M5 EMA trend, pullback to 20-EMA, M1 trigger | 2026-09-25 | 1 | 0 | not run |
+| H02 | Trend pullback: M5 EMA trend, pullback to 20-EMA, M1 trigger | 2026-09-25 | 1 | 0 | **failed**: t = −0.09; no better than random, even within trends |
 
 **Running total:** 7
 
