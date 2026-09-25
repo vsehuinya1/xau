@@ -32,6 +32,11 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
   - **Spread:** $0.11 at the time.
   - **Total:** a round trip costs about $0.18–0.20 per ounce.
   - **Execution:** orders fill as IOC and take 150–200 ms from this VPS.
+- Overnight swap on the Pepperstone demo, read on 2026-09-25 with `symbol_info("XAUUSD")`:
+  - **Long:** −86.64 points per lot per night, which is −$0.87/oz and about 7% a year at $4,280.
+  - **Short:** +31.65 points (+$0.32/oz).
+  - **When:** charged at the 17:00 New York rollover, triple on Wednesdays.
+  - **Caveat:** swaps follow interest rates and may differ on a live account, so re-read them before relying on them.
 - MT5's Algo Trading switch must be on for `order_send`. It's on for the demo terminal.
 
 ## Conventions
@@ -63,7 +68,7 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 
 - **Broker:** MetaTrader 5, through the `MetaTrader5` Python package. Live trading needs a Windows machine or VPS. Research can run on Linux.
 - **Strategy:** research a new edge using a sound process, then build the bot around whatever holds up.
-- **Timeframe:** intraday (M1–M15), flat by the end of the day.
+- **Timeframe:** execution on M1/M5, with signals from any timeframe. Overnight holding is allowed; the user changed this on 2026-09-25, replacing "flat by the end of the day". Overnight trades must include swap in their costs.
 - **Launch:** a paper/demo account first, with full logging. Real money only after a set evaluation period.
 - **Broker account:** Pepperstone. The demo is a Razor account on `Pepperstone-Demo` (Pepperstone Group Limited), in USD. Model costs as raw spread plus a commission per lot; the commission is still to be measured.
 - **Holdout:** market data from 2025-10-01 UTC onward is locked until a strategy is final, and is then tested once. `xau/holdout.py` defines it, and the loaders enforce it (`allow_holdout=True` opts in). Allowed uses are the final test, data-quality checks, and spreads for the cost model. Nothing that looks at returns or signals. The recorded ticks are a second, forward holdout.
