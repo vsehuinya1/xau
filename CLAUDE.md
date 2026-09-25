@@ -27,6 +27,9 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - Test on out-of-sample and walk-forward windows. Check that profits aren't concentrated in a few trades, one year, or one type of setup.
 - Scratch outputs and downloaded data stay out of git.
 
-## Execution
+## Decisions (2026-09-25)
 
-Planned live bridge: MetaTrader 5 through the `MetaTrader5` Python package. It needs a Windows VPS.
+- **Broker:** MetaTrader 5, through the `MetaTrader5` Python package. Live trading needs a Windows machine or VPS. Research can run on Linux.
+- **Strategy:** research a new edge using a sound process, then build the bot around whatever holds up.
+- **Timeframe:** intraday (M1–M15), flat by the end of the day.
+- **Launch:** a paper/demo account first, with full logging. Real money only after a set evaluation period.
