@@ -27,6 +27,15 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - Test on out-of-sample and walk-forward windows. Check that profits aren't concentrated in a few trades, one year, or one type of setup.
 - Scratch outputs and downloaded data stay out of git.
 
+## MT5 container (`mt5/`)
+
+- Start it with `cd mt5 && docker compose up -d --build`. The first start installs WebView2, MT5 and Windows Python 3.11 with the `MetaTrader5` package into the `xau-mt5_wine` volume. That takes about 8 minutes. MT5 then updates itself inside the volume.
+- The screen is served over VNC on 127.0.0.1:5900 only. The password is in `mt5/.env`, which git ignores. From a Mac: `ssh -L 5901:localhost:5900 root@<vps>`, then open `vnc://localhost:5901` in Screen Sharing.
+- Two versions are pinned deliberately:
+  - **Wine 10.0 stable.** Under Wine 11, the Python IPC times out.
+  - **numpy 1.26.4.** numpy 2.x calls `ucrtbase.crealf`, which Wine 10 doesn't have.
+- `mt5.initialize()` returns an IPC timeout (-10005) while no account is logged in. Whether it works once an account is logged in hasn't been tested yet.
+
 ## Decisions (2026-09-25)
 
 - **Broker:** MetaTrader 5, through the `MetaTrader5` Python package. Live trading needs a Windows machine or VPS. Research can run on Linux.

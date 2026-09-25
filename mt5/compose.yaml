@@ -1,0 +1,21 @@
+# MetaTrader 5 under Wine. Its screen (VNC) is published on 127.0.0.1 only;
+# reach it from the Mac through an SSH tunnel.
+name: xau-mt5
+
+services:
+  mt5:
+    build: .
+    image: xau-mt5
+    container_name: xau-mt5
+    init: true
+    restart: unless-stopped
+    shm_size: 512m
+    ports:
+      - "127.0.0.1:5900:5900"
+    environment:
+      VNC_PASSWORD: ${VNC_PASSWORD:?set VNC_PASSWORD in mt5/.env}
+    volumes:
+      - wine:/home/mt5/.wine
+
+volumes:
+  wine:
