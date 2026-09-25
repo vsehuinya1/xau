@@ -18,10 +18,15 @@ services:
       MT5_LOGIN: ${MT5_LOGIN:-}
       MT5_PASSWORD: ${MT5_PASSWORD:-}
       MT5_SERVER: ${MT5_SERVER:-}
+      # Paper trading (demo only): PAPER_TRADING=1 starts the bot; PAPER_DRY_RUN=1 logs signals only.
+      PAPER_TRADING: ${PAPER_TRADING:-}
+      PAPER_DRY_RUN: ${PAPER_DRY_RUN:-}
+      PAPER_LOT: ${PAPER_LOT:-0.10}
     volumes:
       - wine:/home/mt5/.wine
       - ./winpy:/opt/xau:ro           # Windows-side Python (recorder, downloaders)
-      - ../data/mt5:/data             # ticks/ and bars/; owned by uid 1001
+      - ../data/mt5:/data             # ticks/, bars/, paper/; owned by uid 1001
+      - ../xau:/opt/xau-lib/xau:ro    # tested strategy code for the paper bot
 
 volumes:
   wine:

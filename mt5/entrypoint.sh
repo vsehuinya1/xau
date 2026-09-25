@@ -50,7 +50,7 @@ if [[ ! -f "$TERMINAL" ]]; then
         Include_test=0 Include_doc=0 Include_tcltk=0 Include_launcher=0
     settle
     wine "$PYTHON" -m pip install --no-warn-script-location \
-        "MetaTrader5==$MT5_PY_VERSION" "numpy==$NUMPY_VERSION"
+        "MetaTrader5==$MT5_PY_VERSION" "numpy==$NUMPY_VERSION" "pandas==2.2.3" tzdata
     settle
     echo "First-run install complete"
 fi
@@ -62,7 +62,7 @@ TERMINAL_ARGS=()
 if [[ -n "${MT5_LOGIN:-}" ]]; then
     : "${MT5_PASSWORD:?MT5_PASSWORD must be set with MT5_LOGIN}"
     : "${MT5_SERVER:?MT5_SERVER must be set with MT5_LOGIN}"
-    (umask 077; printf '[Common]\r\nLogin=%s\r\nPassword=%s\r\nServer=%s\r\nKeepPrivate=1\r\nNewsEnable=0\r\n[Charts]\r\nMaxBars=5000000\r\n' \
+    (umask 077; printf '[Common]\r\nLogin=%s\r\nPassword=%s\r\nServer=%s\r\nKeepPrivate=1\r\nNewsEnable=0\r\n[Charts]\r\nMaxBars=5000000\r\n[Experts]\r\nEnabled=1\r\nAllowLiveTrading=1\r\n' \
         "$MT5_LOGIN" "$MT5_PASSWORD" "$MT5_SERVER" > /tmp/mt5-startup.ini)
     TERMINAL_ARGS+=('/config:Z:\tmp\mt5-startup.ini')
 fi
@@ -75,6 +75,16 @@ if [[ -n "${MT5_LOGIN:-}" && -f /opt/xau/recorder.py ]]; then
     (
         while true; do
             wine "$PYTHON" Z:/opt/xau/recorder.py || echo "recorder exited with $?"
+            sleep 60
+        done
+    ) &
+fi
+
+# Paper-trading bot (demo only; mt5/winpy/paper_bot.py), restarted whenever it exits.
+if [[ "${PAPER_TRADING:-}" == 1 && -f /opt/xau/paper_bot.py ]]; then
+    (
+        while true; do
+            wine "$PYTHON" Z:/opt/xau/paper_bot.py || echo "paper bot exited with $?"
             sleep 60
         done
     ) &

@@ -34,7 +34,12 @@ next M1 open and exit 30 minutes later. The code is in `xau/dollar_shock.py`.
 - **Lumpy returns:** 5 of 12 holdout months lost.
 - **Changing strength:** the effect varied over time.
 
-**Status:** next is paper trading on the demo account with real fills.
+**Status:** paper trading on the demo account since 2026-09-25, with `mt5/winpy/paper_bot.py` running in the container.
+- **Settings:** 0.10 lot, one position at a time, exit at 30 minutes, and a $1,000 daily loss limit.
+- **Controls:** `PAPER_TRADING`, `PAPER_DRY_RUN` and `PAPER_LOT` in `mt5/.env`. Creating `data/mt5/paper/STOP` blocks new entries.
+- **Logs:** `data/mt5/paper/signals.csv` and `trades.csv` record quotes, fills, spreads and latency.
+- **Same code as the research:** the bot imports `xau/dollar_shock.py`, which is mounted read-only. Its 400-bar-window z-scores match full-history ones exactly, and its shock selection matched the research on H1 2024.
+- **Review:** after about 30 trades, compare real fills with the news-heavy cost model.
 
 The holdout has now been used for this strategy. Further research can't treat
 Oct 2025 to Sep 2026 as unseen.

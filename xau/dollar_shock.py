@@ -22,12 +22,21 @@ def z_scores(m1):
     return pd.Series((b.close - b.price_at(b.tc - MOVE_MINUTES * MIN)) / series_at(m5_atr(m1), b.t), index=b.tc)
 
 
+def gold_direction(z_eur, z_jpy, k):
+    """+1 (buy gold) on a broad dollar fall, -1 (sell) on a broad dollar rise, 0 otherwise.
+
+    Works on scalars or arrays. The one definition of a shock, shared by the
+    research and the paper-trading bot.
+    """
+    up = (np.asarray(z_eur) <= -k) & (np.asarray(z_jpy) >= k)    # dollar up against both
+    down = (np.asarray(z_eur) >= k) & (np.asarray(z_jpy) <= -k)  # dollar down against both
+    return np.where(down, 1, np.where(up, -1, 0))
+
+
 def shocks(eurusd, usdjpy, k, cooldown=COOLDOWN):
     """Shock times (ns, M1 close) and gold direction (+1 long / -1 short)."""
     z = pd.concat({"EURUSD": z_scores(eurusd), "USDJPY": z_scores(usdjpy)}, axis=1, join="inner").dropna()
-    up = (z.EURUSD <= -k) & (z.USDJPY >= k)    # dollar up against both
-    down = (z.EURUSD >= k) & (z.USDJPY <= -k)  # dollar down against both
-    cand = z[up | down]
+    cand = z[gold_direction(z.EURUSD, z.USDJPY, k) != 0]
     kept, last = [], None
     for t in cand.index:
         if last is None or t >= last + cooldown * MIN:
