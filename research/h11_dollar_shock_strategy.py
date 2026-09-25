@@ -46,6 +46,16 @@ def summary(t, years):
     for name, a, b in ERAS:
         e = t[(t.entry_time >= pd.Timestamp(a, tz="UTC")) & (t.entry_time < pd.Timestamp(b, tz="UTC"))]
         s[f"mean net {name}"] = e.net.mean()
+    s.update({"NEWS-HEAVY mean net $/oz": t.net_news_heavy.mean(), "NEWS-HEAVY t (by day)": clustered_t(t.net_news_heavy, t.day),
+              "NEWS-HEAVY total $/oz": t.net_news_heavy.sum(),
+              "NEWS-HEAVY Sharpe": t.net_news_heavy.mean() / t.net_news_heavy.std() * np.sqrt(per_year),
+              "NEWS-HEAVY max drawdown $/oz": max_drawdown(t.net_news_heavy),
+              "share of trades in 08:30-08:45 NY": np.mean(
+                  (lambda ny: (ny.hour * 60 + ny.minute >= 510) & (ny.hour * 60 + ny.minute < 525))(
+                      pd.DatetimeIndex(t.entry_time).tz_convert("America/New_York")))})
+    for name, a, b in ERAS:
+        e = t[(t.entry_time >= pd.Timestamp(a, tz="UTC")) & (t.entry_time < pd.Timestamp(b, tz="UTC"))]
+        s[f"NEWS-HEAVY mean net {name}"] = e.net_news_heavy.mean()
     return s
 
 
@@ -57,7 +67,7 @@ def main():
         t = trades_for(*data, hold, start=HOLDOUT_START)
         span = (t.entry_time.max() - HOLDOUT_START).days / 365.25
         s = pd.Series(summary(t, span)).to_frame(f"holdout, H={hold}")
-        s.loc["PASS (mean net > 0)"] = bool(t.net.mean() > 0)
+        s.loc["PASS (NEWS-HEAVY mean net > 0)"] = bool(t.net_news_heavy.mean() > 0)
         by_month = t.groupby(t.entry_time.dt.strftime("%Y-%m")).net.agg(["size", "sum"]).rename(columns={"size": "trades", "sum": "net $/oz"})
         out = [f"# H11 holdout\n\nRun {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC, once, on {HOLDOUT_START:%Y-%m-%d} "
                f"to {t.exit_time.max():%Y-%m-%d} with the variant chosen in `H11-results.md` (H = {hold}).\n",

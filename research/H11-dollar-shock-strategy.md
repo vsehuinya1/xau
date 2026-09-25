@@ -76,6 +76,23 @@ from 2025-10-01 to the latest data.
 - **Then:** a pass moves the strategy to paper trading on the demo account. A
   fail stops it.
 
+## Cost correction before the holdout (fixed 2026-09-25, before the holdout ran)
+
+Recorded ticks from 2026-08-31 to 09-24 show that the M1 bar `spread` field
+is roughly the calmest spread in the minute. It badly understates the spread
+paid at big releases (`H11-news-costs.md`, spreads only):
+- **Jobs report, 09-04:** $0.90 at 08:31 entry, against a bar field of $0.08.
+- **Jobless-claims Thursdays:** $0.18–0.23.
+- **Normal days:** $0.12–0.13.
+
+Both H = 30 results and the holdout's pass are therefore judged under a
+deliberately harsh **news-heavy cost model**:
+- **Release window:** every trade entering between 08:30 and 08:45 New York
+  pays an extra $0.80/oz, about jobs-report level, applied to every release.
+- **Everything else:** every other trade pays an extra $0.10/oz.
+
+**Holdout pass:** mean net per trade > 0 under news-heavy costs.
+
 ## Trial count
 
 2 variants, so the running total becomes 32.

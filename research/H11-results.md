@@ -1,6 +1,6 @@
 # H11 results
 
-Run 2026-09-25 11:34 UTC on Pepperstone M1 bars 2018-01-01 to 2025-09-30, as pre-registered in `H11-dollar-shock-strategy.md` (commit eb426bc). Net is per trade in $/oz after spread + $0.11.
+Run 2026-09-25 11:38 UTC on Pepperstone M1 bars 2018-01-01 to 2025-09-30, as pre-registered in `H11-dollar-shock-strategy.md` (commit eb426bc). Net is per trade in $/oz after spread + $0.11.
 
 |  | H=15 | H=30 |
 |---|---|---|
@@ -16,6 +16,15 @@ Run 2026-09-25 11:34 UTC on Pepperstone M1 bars 2018-01-01 to 2025-09-30, as pre
 | mean net 2018-20 | 0.120 | 0.188 |
 | mean net 2021-22 | -0.066 | 0.545 |
 | mean net 2023-Sep25 | 0.903 | 1.140 |
+| NEWS-HEAVY mean net $/oz | 0.096 | 0.382 |
+| NEWS-HEAVY t (by day) | 0.519 | 1.640 |
+| NEWS-HEAVY total $/oz | 68.590 | 274.510 |
+| NEWS-HEAVY Sharpe | 0.185 | 0.587 |
+| NEWS-HEAVY max drawdown $/oz | 123.620 | 114.730 |
+| share of trades in 08:30-08:45 NY | 0.320 | 0.320 |
+| NEWS-HEAVY mean net 2018-20 | -0.145 | -0.077 |
+| NEWS-HEAVY mean net 2021-22 | -0.343 | 0.268 |
+| NEWS-HEAVY mean net 2023-Sep25 | 0.512 | 0.749 |
 | net > 0 in every era | 0.000 | 1.000 |
 
 **Chosen for the holdout: H = 30.**

@@ -38,11 +38,23 @@ def shocks(eurusd, usdjpy, k, cooldown=COOLDOWN):
     return out
 
 
+def news_heavy_extra(entry_times):
+    """H11's harsh cost add-on: +$0.80/oz for entries 08:30-08:45 New York, +$0.10 otherwise.
+
+    The M1 bar spread field is about the calmest spread in the minute. Real
+    entry spreads at big releases were up to $0.90 (H11-news-costs.md).
+    """
+    ny = pd.DatetimeIndex(entry_times).tz_convert("America/New_York")
+    minute = ny.hour * 60 + ny.minute
+    return np.where((minute >= 8 * 60 + 30) & (minute < 8 * 60 + 45), 0.80, 0.10)
+
+
 def simulate(signals, gold, hold, cost_fixed=COST_FIXED):
     """One trade per signal: enter at the next gold M1 open, exit after `hold` minutes.
 
     Signals arriving while a position is open are skipped. Returns one row per
-    trade with prices, cost and net $/oz.
+    trade with prices, cost and net $/oz, plus net_news_heavy under H11's harsh
+    news-time cost add-on.
     """
     b = Bars(gold)
     rows, busy_until = [], None
@@ -61,4 +73,6 @@ def simulate(signals, gold, hold, cost_fixed=COST_FIXED):
         rows.append((pd.Timestamp(entry_t, tz="UTC"), pd.Timestamp(exit_t, tz="UTC"), s.direction, entry, exit_,
                      cost, s.direction * (exit_ - entry) - cost))
         busy_until = exit_t
-    return pd.DataFrame(rows, columns=["entry_time", "exit_time", "direction", "entry", "exit", "cost", "net"])
+    trades = pd.DataFrame(rows, columns=["entry_time", "exit_time", "direction", "entry", "exit", "cost", "net"])
+    trades["net_news_heavy"] = trades.net - news_heavy_extra(trades.entry_time)
+    return trades
