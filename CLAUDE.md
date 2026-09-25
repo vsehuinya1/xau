@@ -21,7 +21,7 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 - Treat any out-of-sample profit factor above about 3 as a bug or too few trades until you've checked it.
 - MT5 timestamps (tick `time`/`time_msc` and bar `time`) are in the broker's server time, not UTC, even though they look like Unix times. Always convert them with `xau.servertime.server_to_utc`, never by hand.
   - **The rule:** Pepperstone's server runs at New York time + 7 hours.
-  - **The exception:** in winter 2017/18 the server stayed on UTC+3. The converter has that exception built in.
+  - **The exception:** in winter 2017/18 the server stayed on UTC+3. The converter has that exception built in. Because Pepperstone's close is set in server time, the daily break that winter ran 16:00–18:00 New York, so there are no bars at 16:00–16:59 New York.
   - **The evidence:** checked against the live clock, the 18:00 New York daily reopens (99.7% of 2,390 since 2017), and the 08:30 NFP spikes.
   - **The trap:** Pepperstone's closes are set in server time, so they look right whatever the clock does. Only market-driven times (reopens, news spikes) can reveal an offset error.
 - On Pepperstone-Demo, tick history goes back only about 4 weeks: when checked on 2026-09-25, the earliest tick was 2026-08-28.
