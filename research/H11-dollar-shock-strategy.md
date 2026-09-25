@@ -1,8 +1,28 @@
 # H11: The dollar-shock momentum strategy, with trade rules and costs
 
-**Status:** PRE-REGISTERED 2026-09-25 under the user's standing goal. Nothing
-had been run with these rules before this file was committed; results go in
-`H11-results.md`.
+**Status:** PRE-REGISTERED 2026-09-25 (commit eb426bc) under the user's
+standing goal.
+
+**Run on 2018 to Sep 2025, 2026-09-25:**
+
+| | H = 30 | H = 15 |
+|---|---|---|
+| Trades | 718 (93 a year) | 718 |
+| Mean net per trade | +$0.71/oz (t = 3.04) | +$0.42/oz (t = 2.29) |
+| Win rate | 47% | 47% |
+| Sharpe | 1.09 | 0.81 |
+| Max drawdown | $72/oz | $94/oz |
+| Net by era (2018–20 / 2021–22 / 2023–25) | +0.19 / +0.55 / +1.14 | +0.12 / −0.07 / +0.90 |
+
+- **H = 30 is chosen for the holdout.** It is profitable in 7 of 8 years.
+  Most of the profit comes from New York-morning shocks, at +$1.20 per trade.
+- **H = 15** fails the every-era rule because 2021–22 was negative.
+- **Caveat:** these net figures are in-sample. The 2018–2025 data were used
+  while exploring H07–H09, and H10 confirmed the effect's existence out of
+  sample but not its net profit. The holdout has not been run; it is awaiting
+  the user's approval.
+
+See `H11-results.md`.
 
 ## Background
 
