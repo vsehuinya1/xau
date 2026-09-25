@@ -54,7 +54,18 @@ if [[ ! -f "$TERMINAL" ]]; then
     echo "First-run install complete"
 fi
 
-wine "$TERMINAL" &
+# Optional auto-login from MT5_LOGIN / MT5_PASSWORD / MT5_SERVER (mt5/.env),
+# through MT5's startup config file. KeepPrivate saves the login in the prefix.
+TERMINAL_ARGS=()
+if [[ -n "${MT5_LOGIN:-}" ]]; then
+    : "${MT5_PASSWORD:?MT5_PASSWORD must be set with MT5_LOGIN}"
+    : "${MT5_SERVER:?MT5_SERVER must be set with MT5_LOGIN}"
+    (umask 077; printf '[Common]\r\nLogin=%s\r\nPassword=%s\r\nServer=%s\r\nKeepPrivate=1\r\nNewsEnable=0\r\n' \
+        "$MT5_LOGIN" "$MT5_PASSWORD" "$MT5_SERVER" > /tmp/mt5-startup.ini)
+    TERMINAL_ARGS+=('/config:Z:\tmp\mt5-startup.ini')
+fi
+
+wine "$TERMINAL" "${TERMINAL_ARGS[@]}" &
 # MT5 restarts itself to apply updates, so wait on the whole Wine session
 # rather than the first terminal process. wineserver -w returns at once if
 # the server isn't up yet, so wait for the terminal to appear first.

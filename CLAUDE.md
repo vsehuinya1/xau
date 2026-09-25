@@ -30,7 +30,9 @@ A trading bot for gold (XAUUSD). The repo was cleared on 2026-09-25 to start fre
 ## MT5 container (`mt5/`)
 
 - Start it with `cd mt5 && docker compose up -d --build`. The first start installs WebView2, MT5 and Windows Python 3.11 with the `MetaTrader5` package into the `xau-mt5_wine` volume. That takes about 8 minutes. MT5 then updates itself inside the volume.
-- The screen is served over VNC on 127.0.0.1:5900 only. The password is in `mt5/.env`, which git ignores. From a Mac: `ssh -L 5901:localhost:5900 root@<vps>`, then open `vnc://localhost:5901` in Screen Sharing.
+- The screen is served over VNC on 127.0.0.1:5900 only, and the password is in `mt5/.env`, which git ignores. Claude drives the screen from the VPS with a VNC client (vncdotool). Don't route setup steps through the user's own machines.
+- To log in automatically, set `MT5_LOGIN`, `MT5_PASSWORD` and `MT5_SERVER` in `mt5/.env`. The entrypoint passes them to MT5 through a startup config file (`/config:`). MT5 can only log in to servers it knows about; adding a new broker's servers takes a one-time "Find your company" search in the account wizard.
+- Pepperstone's Kenyan entity has one MT5 server, `PepperstoneKE-MT5-Live01`, and it has no demo accounts. Demos are on other Pepperstone servers, whose feeds may differ from the live Kenyan one.
 - Two versions are pinned deliberately:
   - **Wine 10.0 stable.** Under Wine 11, the Python IPC times out.
   - **numpy 1.26.4.** numpy 2.x calls `ucrtbase.crealf`, which Wine 10 doesn't have.
