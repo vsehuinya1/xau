@@ -1,8 +1,21 @@
 # H12: Do published gold strategies hold up on our data?
 
-**Status:** PRE-REGISTERED 2026-09-28. The user asked me to find strategies
-that work and are verified. Nothing had been run before this file was
-committed, and none of these windows had been examined.
+**Status:** PRE-REGISTERED 2026-09-28 (commit 55fe90c).
+**Run 2026-09-28: ALL FIVE FAILED.**
+- **A:** the 13:00–13:30 NY intraday momentum was real in 2009–2017 (gross
+  +$0.13/trade, t = 2.7) but gone in 2018–25 (+$0.03), and it loses after costs
+  in both samples.
+- **B1:** the drop into the AM fix was strong in 2009–2017 (gross +$0.27,
+  t = 5.3) but gone in 2018–25 (−$0.08). It loses after costs in both.
+- **B2:** long after the PM fix grossed +$0.21 and +$0.18, and still lost after
+  costs.
+- **C:** turn of the month made +0.19% per trade after swap and costs, t = 1.91
+  (just below 2), positive in both halves. It's the only near miss.
+- **D:** the 200-day filter made +3.5%/yr (t = 1.3), below buy-and-hold's
+  +5.9%/yr, and its Sharpe was worse in the first half.
+
+The published effects existed, but they are too small for retail costs and
+have mostly faded since 2018. See `H12-results.md`.
 
 ## Sources
 

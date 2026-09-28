@@ -29,7 +29,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H11 | Dollar-shock momentum strategy: k = 3 EURUSD+USDJPY shocks, gold against the dollar, time exit H = 15 or 30 min, real costs | 2026-09-25 | 2 | 0 | **HOLDOUT PASSED**: +$3.96/oz per trade under news-heavy costs, t = 1.96, 116 trades from Oct 2025 to Sep 2026. In-sample under news-heavy costs: +$0.38, t = 1.64 |
 
-| H12 | Published strategies: A intraday momentum (JFE 2021), B1/B2 London fix, C turn of month, D 200-day trend filter | 2026-09-28 | 5 | 0 | not run |
+| H12 | Published strategies: A intraday momentum (JFE 2021), B1/B2 London fix, C turn of month, D 200-day trend filter | 2026-09-28 | 5 | 0 | **all failed**: A and B were real before 2018 gross but gone since and below costs; C +0.19%/trade, t = 1.91 (near miss); D worse than buy-and-hold |
 
 **Running total:** 37
 
