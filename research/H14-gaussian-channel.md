@@ -1,7 +1,19 @@
 # H14: The Gaussian channel trend system on H1 and H4
 
 **Status:** PRE-REGISTERED 2026-09-28, at the user's request. Nothing had been
-run before this file was committed.
+run before this file was committed (commit ce1cbac).
+
+**Run 2026-09-28: BOTH FAILED.** Profit factor was about 1.0 with a 22–24% win
+rate, the profile of a trend system that breaks even. The small gross edge was
+eaten by costs and swap.
+
+| | 2009–17, net per trade | 2018–25, net per trade |
+|---|---|---|
+| H1 | −$0.05 (t = −0.18) | +$0.36 (t = 0.96) |
+| H4 | +$0.60 (t = 0.55) | −$0.01 (t = −0.01) |
+
+The last 12 months were positive (H1 +$4.31, H4 +$6.43), riding gold's big
+moves, but t < 1. See `H14-results.md`.
 
 ## Indicator
 
