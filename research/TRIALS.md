@@ -31,7 +31,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H12 | Published strategies: A intraday momentum (JFE 2021), B1/B2 London fix, C turn of month, D 200-day trend filter | 2026-09-28 | 5 | 0 | **all failed**: A and B were real before 2018 gross but gone since and below costs; C +0.19%/trade, t = 1.91 (near miss); D worse than buy-and-hold |
 
-| H13 | M1 EMA-ribbon pullback (20/50/200), Asia, 1.5R, from an X post; T2 adds a Bollinger impulse filter | 2026-09-28 | 2 | 0 | not run |
+| H13 | M1 EMA-ribbon pullback (20/50/200), Asia, 1.5R, from an X post; T2 adds a Bollinger impulse filter | 2026-09-28 | 2 | 0 | **failed**: mean gross R 0.00 over 40k trades, net −$0.25/trade (t = −31); Bollinger filter no help; the post's evening replayed at +$18 |
 
 **Running total:** 39
 

@@ -105,7 +105,7 @@ def main():
     for test, bb in (("T1", False), ("T2", True)):
         r = simulate(recent, None, use_bb=bb)
         diag[(test, "Oct 2025-Sep 2026 (seen)")] = summarize(r[r.entry_time >= pd.Timestamp("2025-10-01", tz="UTC")], 1.0)
-    evening = pd.concat([simulate(recent, None, use_bb=bb).assign(test=name) for name, bb in (("T1", False), ("T2", True))])
+    evening = pd.concat([simulate(recent, None, use_bb=bb).assign(test=name) for name, bb in (("T1", False), ("T2", True))], ignore_index=True)
     ny = evening.entry_time.dt.tz_convert("America/New_York")
     evening = evening[(ny >= pd.Timestamp("2026-09-27 18:00", tz="America/New_York")) & (ny < pd.Timestamp("2026-09-27 22:00", tz="America/New_York"))]
     evening = evening.assign(entry_ny=ny[evening.index].dt.strftime("%H:%M"))[["test", "entry_ny", "side", "entry", "stop", "target", "exit", "R", "net"]]

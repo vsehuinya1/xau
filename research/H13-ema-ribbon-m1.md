@@ -5,7 +5,17 @@ of an X post by @jtrader on 2026-09-28: "VECTOR paired with my ema system",
 two winning XAUUSD shorts on M1 in the Asia session. VECTOR is proprietary, so
 only the EMA system as drawn is tested. The user asked to "add anything that
 helps, like Bollinger bands", and exactly one Bollinger variant is fixed here
-in advance. Nothing had been run before this file was committed.
+in advance. Nothing had been run before this file was committed (commit f50269a).
+
+**Run 2026-09-28: BOTH FAILED, decisively.**
+- **T1:** 39,960 Asia trades in 2018 to Sep 2025. Win rate 37%, mean gross
+  R = 0.00, net −$0.25/oz per trade (t = −31).
+- **T2:** the Bollinger filter left the quality unchanged (−$0.26, t = −28).
+- **Everywhere else:** both lose in 2009–2017, in every session and over the
+  last 12 months.
+- **The post's evening:** the mechanical version would also have won,
+  +$18/oz over 11 shorts. That is a trending evening, not an edge. See
+  `H13-results.md`.
 
 ## Rules (M1, with shorts shown; longs mirror them)
 
