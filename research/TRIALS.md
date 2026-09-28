@@ -33,7 +33,9 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H13 | M1 EMA-ribbon pullback (20/50/200), Asia, 1.5R, from an X post; T2 adds a Bollinger impulse filter | 2026-09-28 | 2 | 0 | **failed**: mean gross R 0.00 over 40k trades, net −$0.25/trade (t = −31); Bollinger filter no help; the post's evening replayed at +$18 |
 
-**Running total:** 39
+| H14 | Gaussian channel (DonovanWall defaults) trend system, H1 and H4, swap-inclusive | 2026-09-28 | 2 | 0 | not run |
+
+**Running total:** 41
 
 ## Unconfirmed observations
 
