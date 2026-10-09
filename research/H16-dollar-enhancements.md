@@ -1,8 +1,22 @@
 # H16: Two enhancements to dollar-shock momentum
 
 **Status:** PRE-REGISTERED 2026-10-09. The user said "work with the dollar".
-Nothing had been run before this file was committed. In particular, the
+Nothing had been run before this file was committed (commit 690ced3). In particular, the
 gold-confirmation split had never been looked at on 2009–2017.
+
+**Run 2026-10-09: BOTH FAILED.**
+- **T1:** the six-currency shock is worse than the two-pair baseline in both
+  samples: −$0.24 against −$0.20 in 2009–17, and +$0.09 against +$0.38 in
+  2018–25.
+- **T2:** the gold-followed filter is noise. It looked better in 2009–17
+  (−$0.09 against −$0.20), but the *unfollowed* split did better in 2018–25.
+
+**Key finding: the baseline strategy itself was not profitable in 2009–2017.**
+It made +$0.10 per trade with base costs and −$0.20 with news-heavy costs,
+even though H10 confirmed the effect there (t = 6.5). The effect scales with
+gold's dollar volatility while costs are roughly fixed in dollars. The edge
+covers costs only in high-volatility regimes: 2018 onward, and especially
+2023–26. That is a regime risk to monitor. See `H16-results.md`.
 
 **Baseline:** the live strategy (H11): EURUSD and USDJPY both ≥ 3 ATR in 5
 minutes in the dollar direction, then gold against the dollar for 30 minutes.

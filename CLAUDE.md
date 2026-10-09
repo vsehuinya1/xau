@@ -29,6 +29,7 @@ next M1 open and exit 30 minutes later. The code is in `xau/dollar_shock.py`.
   Sep 2026, t = 1.96 (H11).
 
 **Risks:**
+- **Volatility regime:** the edge only beats costs when gold's dollar volatility is high (H16). The strategy lost money after costs in 2009–2017, when gold was cheaper and quieter.
 - **Fills at US releases:** the M1 bar spread field understates news-time
   spreads.
 - **Lumpy returns:** 5 of 12 holdout months lost.

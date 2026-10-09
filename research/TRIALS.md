@@ -37,7 +37,7 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H15 | ADR exhaustion fade (LuxAlgo Average Daily Range), M5 trigger; T2 skips moves with a dollar shock in the past hour | 2026-10-09 | 2 | 0 | **failed**: about zero before costs; the dollar-shock filter improved both samples but not to positive |
 
-| H16 | Dollar enhancements: T1 six-currency broad shock; T2 gold-already-followed filter (judged on 2009–17) | 2026-10-09 | 2 | 0 | not run |
+| H16 | Dollar enhancements: T1 six-currency broad shock; T2 gold-already-followed filter (judged on 2009–17) | 2026-10-09 | 2 | 0 | **failed**: six-currency version worse; followed filter is noise. The baseline itself was unprofitable in 2009–17 after costs, a regime dependency |
 
 **Running total:** 45
 
