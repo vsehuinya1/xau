@@ -35,7 +35,9 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H14 | Gaussian channel (DonovanWall defaults) trend system, H1 and H4, swap-inclusive | 2026-09-28 | 2 | 0 | **failed**: profit factor about 1.0, all t < 1 |
 
-**Running total:** 41
+| H15 | ADR exhaustion fade (LuxAlgo Average Daily Range), M5 trigger; T2 skips moves with a dollar shock in the past hour | 2026-10-09 | 2 | 0 | not run |
+
+**Running total:** 43
 
 ## Unconfirmed observations
 
