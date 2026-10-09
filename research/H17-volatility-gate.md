@@ -1,7 +1,22 @@
 # H17: A volatility gate for dollar-shock momentum
 
 **Status:** PRE-REGISTERED 2026-10-09, approved by the user ("Yes"). Nothing
-had been run before this file was committed.
+had been run before this file was committed (commit de07eb5).
+
+**Run 2026-10-09: PASSED.** β = 0.330 was calibrated on 2009–2017.
+
+| 2018 to Sep 2025, news-heavy costs | Ungated | Gated |
+|---|---|---|
+| Trades | 718 | 326 |
+| Net per trade | +$0.38 (t = 1.64) | +$0.99 (t = 2.65) |
+| Total | +$275/oz | +$322/oz |
+| Max drawdown | $115 | $55 |
+
+- **By year:** the gate helped in 2018, 2021, 2022 and 2025 and hurt in 2019
+  and 2024.
+- **Oct 2025 to Sep 2026:** the gate blocked nothing; gold's ATR averaged
+  about $6.
+- **Use:** the gate goes into the paper bot. See `H17-results.md`.
 
 ## Why
 
