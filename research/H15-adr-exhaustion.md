@@ -2,7 +2,18 @@
 
 **Status:** PRE-REGISTERED 2026-10-09. The user asked for a strategy from
 LuxAlgo's library, adapted and enhanced for gold and different from
-dollar-shock momentum. Nothing had been run before this file was committed.
+dollar-shock momentum. Nothing had been run before this file was committed (commit 2a70adf).
+
+**Run 2026-10-09: BOTH FAILED.**
+- **T1 (as adapted):** net −$0.69/trade in 2009–17 (t = −3.7) and −$0.39 in
+  2018–25 (t = −1.4). Before costs it is about zero: a day reaching its
+  average range doesn't mean it stops.
+- **T2 (dollar-shock filter):** better in both samples (−$0.61 and −$0.22), so
+  skipping dollar-driven extensions helps. It is still negative.
+- **Oct 2025 to Sep 2026 (diagnostic):** +$2.98 and +$1.90 per trade, with
+  t < 1.1.
+
+See `H15-results.md`.
 
 ## Source and why it was chosen
 
