@@ -10,6 +10,7 @@ Run with the Windows Python in the container:
 import calendar
 import datetime as dt
 import os
+import time
 
 import MetaTrader5 as mt5
 import numpy as np
@@ -21,8 +22,14 @@ OUT = os.environ.get("BARS_OUT", "Z:/data/bars")
 REQUIRED_FROM = os.environ.get("REQUIRED_FROM")
 
 assert mt5.initialize(timeout=60000), mt5.last_error()
+if not mt5.symbol_select(SYMBOL, True):  # history only loads for Market Watch symbols
+    raise SystemExit(f"cannot select {SYMBOL}: {mt5.last_error()}")
 maxbars = mt5.terminal_info().maxbars
-rates = mt5.copy_rates_from_pos(SYMBOL, mt5.TIMEFRAME_M1, 0, maxbars - 1)
+for attempt in range(20):  # a newly selected symbol's history arrives in the background
+    rates = mt5.copy_rates_from_pos(SYMBOL, mt5.TIMEFRAME_M1, 0, maxbars - 1)
+    if rates is not None and len(rates):
+        break
+    time.sleep(15)
 if rates is None or not len(rates):
     raise SystemExit(f"copy_rates_from_pos failed: {mt5.last_error()}")
 if len(rates) >= maxbars - 1:
