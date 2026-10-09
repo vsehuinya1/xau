@@ -58,6 +58,19 @@ def news_heavy_extra(entry_times):
     return np.where((minute >= 8 * 60 + 30) & (minute < 8 * 60 + 45), 0.80, 0.10)
 
 
+GATE_BETA = 0.330  # H17: gross $/oz per trade per $ of gold M5 ATR, calibrated on 2009-2017
+
+
+def gate(atr, spread, entry_time):
+    """H17 volatility gate: trade only if GATE_BETA x ATR covers the news-heavy cost.
+
+    atr is gold's M5 ATR(14) at the shock and spread the live spread ($/oz).
+    Returns (ok, expected move, cost)."""
+    cost = spread + COST_FIXED + float(news_heavy_extra([pd.Timestamp(entry_time)])[0])
+    expected = GATE_BETA * atr
+    return bool(expected >= cost), expected, cost
+
+
 def simulate(signals, gold, hold, cost_fixed=COST_FIXED):
     """One trade per signal: enter at the next gold M1 open, exit after `hold` minutes.
 

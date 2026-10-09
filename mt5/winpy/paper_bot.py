@@ -5,7 +5,8 @@ Runs in the container's Windows Python, with the repo's xau package mounted at
 
 Each minute, once EURUSD and USDJPY have both closed a new M1 bar, it computes
 their z-scores from the last 400 bars and checks for a shock. On a shock
-(30-minute cooldown) it opens gold against the dollar if no position is open.
+(30-minute cooldown) it opens gold against the dollar if no position is open
+and the H17 volatility gate passes (expected move >= live cost).
 It closes each position 30 minutes after entry.
 
 Guards: refuses non-demo accounts; one position at a time; no new entries
@@ -26,7 +27,8 @@ import MetaTrader5 as mt5  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from xau.dollar_shock import COOLDOWN, gold_direction, z_scores  # noqa: E402
+from xau.dollar_shock import COOLDOWN, gate, gold_direction, z_scores  # noqa: E402
+from xau.features import m5_atr  # noqa: E402
 
 GOLD, EUR, JPY = "XAUUSD", "EURUSD", "USDJPY"
 K = 3.0
@@ -137,11 +139,17 @@ def main():
         if side == 0 or (last_shock is not None and bar_close < last_shock + pd.Timedelta(minutes=COOLDOWN)):
             continue
         last_shock = bar_close
+        gold = closed_bars(GOLD)
+        tick = mt5.symbol_info_tick(GOLD)
+        atr = float(m5_atr(gold).iloc[-1]) if gold is not None else float("nan")
+        gate_ok, expected, cost = gate(atr, tick.ask - tick.bid, pd.Timestamp.utcnow())
         reason = ("dry run" if DRY_RUN else "position open" if my_position() is not None
                   else "STOP file" if os.path.exists(STOP_FILE)
-                  else "daily loss limit" if realised_today() <= -DAILY_LOSS else "")
+                  else "daily loss limit" if realised_today() <= -DAILY_LOSS
+                  else "volatility gate" if not gate_ok else "")
         row = {"utc": f"{dt.datetime.utcnow():%Y-%m-%d %H:%M:%S}", "server_bar_close": f"{bar_close:%Y-%m-%d %H:%M}",
-               "z_eur": round(z_eur, 3), "z_jpy": round(z_jpy, 3), "side": side, "skipped": reason}
+               "z_eur": round(z_eur, 3), "z_jpy": round(z_jpy, 3), "side": side, "gold_atr": round(atr, 3),
+               "expected": round(expected, 3), "cost": round(cost, 3), "skipped": reason}
         append("signals.csv", row)
         log(f"shock at {bar_close:%H:%M} server: z EURUSD {z_eur:+.2f}, USDJPY {z_jpy:+.2f} -> "
             f"{'buy' if side > 0 else 'sell'} gold{' (skipped: ' + reason + ')' if reason else ''}")

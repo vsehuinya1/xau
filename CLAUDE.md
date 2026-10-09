@@ -35,8 +35,11 @@ next M1 open and exit 30 minutes later. The code is in `xau/dollar_shock.py`.
 - **Lumpy returns:** 5 of 12 holdout months lost.
 - **Changing strength:** the effect varied over time.
 
+**The gate:** a volatility gate keeps it to high-volatility regimes; see the paper-trading settings below.
+
 **Status:** paper trading on the demo account since 2026-09-25, with `mt5/winpy/paper_bot.py` running in the container.
 - **Settings:** 0.10 lot, one position at a time, exit at 30 minutes, and a $1,000 daily loss limit.
+- **Volatility gate (H17, live since 2026-10-09):** the bot skips a shock unless 0.330 × gold's M5 ATR covers the live spread + $0.11 + the news-heavy add-on. Each signal's gold ATR, expected move and cost are logged in `signals.csv`; earlier signals are in `signals_until_2026-10-09.csv`.
 - **Controls:** `PAPER_TRADING`, `PAPER_DRY_RUN` and `PAPER_LOT` in `mt5/.env`. Creating `data/mt5/paper/STOP` blocks new entries.
 - **Logs:** `data/mt5/paper/signals.csv` and `trades.csv` record quotes, fills, spreads and latency.
 - **Same code as the research:** the bot imports `xau/dollar_shock.py`, which is mounted read-only. Its 400-bar-window z-scores match full-history ones exactly, and its shock selection matched the research on H1 2024.
