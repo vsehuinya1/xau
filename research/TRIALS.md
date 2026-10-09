@@ -39,7 +39,9 @@ Add a row when a hypothesis is registered, and update it when it's run.
 
 | H16 | Dollar enhancements: T1 six-currency broad shock; T2 gold-already-followed filter (judged on 2009–17) | 2026-10-09 | 2 | 0 | **failed**: six-currency version worse; followed filter is noise. The baseline itself was unprofitable in 2009–17 after costs, a regime dependency |
 
-**Running total:** 45
+| H17 | Volatility gate for dollar-shock momentum: trade only if beta × ATR ≥ cost (beta from 2009–17), tested on 2018–25 | 2026-10-09 | 1 | 0 | not run |
+
+**Running total:** 46
 
 ## Unconfirmed observations
 
