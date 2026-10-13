@@ -68,6 +68,13 @@ Oct 2025 to Sep 2026 as unseen.
   - **Spread:** $0.11 at the time.
   - **Total:** a round trip costs about $0.18–0.20 per ounce.
   - **Execution:** orders fill as IOC and take 150–200 ms from this VPS.
+- XAGUSD on the Razor demo, checked 2026-10-13:
+  - **Contract:** 5,000 oz per lot, 3 digits, so $0.001 is worth $5 per lot.
+  - **Costs:** no commission; a 0.01-lot round trip cost only the $0.030
+    spread.
+  - **Spread:** the bar spread field has run at 4–6 bp of price since 2018.
+    That makes silver about 20× costlier than gold relative to price, which
+    sank it in H19.
 - Overnight swap on the Pepperstone demo, read on 2026-09-25 with `symbol_info("XAUUSD")`:
   - **Long:** −86.64 points per lot per night, which is −$0.87/oz and about 7% a year at $4,280.
   - **Short:** +31.65 points (+$0.32/oz).

@@ -5,6 +5,19 @@ Nothing had been run before this file was committed. Silver's returns after
 dollar shocks had never been measured. H07 used silver only as a possible
 leader of gold.
 
+**Run 2026-10-13: FAILED.** The holdout was not opened. See `H19-results.md`.
+- **Weak follow-through:** silver keeps moving with the shock, but only by
+  about half as much per unit of volatility as gold (β = 0.154 against
+  gold's 0.330).
+  - Gross per trade: +5.0 bp in 2009–17 (t = 2.80, short of 3) and +3.5 bp
+    in 2018–25 (t = 1.66).
+- **Costs:** a realistic round trip averages 8 bp in 2018–25, so the ungated
+  trade loses 4.5 bp (t = −2.1).
+- **Gate:** it keeps only 17 trades in 7¾ years. Their +12 bp mean has
+  t = 0.5, which is noise.
+- **No added events:** all 17 fall on shocks gold also traded, with a
+  correlation of 0.79.
+
 ## Why silver
 
 H18 showed the forex pairs don't keep moving after a shock; they *are* the
