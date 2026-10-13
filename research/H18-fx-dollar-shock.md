@@ -4,6 +4,15 @@
 Nothing had been run before this file was committed. Forex moves after these
 shocks had never been examined; earlier work only measured gold.
 
+**Run 2026-10-13: FAILED, 0 of 6 pairs.** See `H18-results.md`.
+- **Gross:** the pairs keep drifting with the dollar by only 0–2 pips in 30
+  minutes. Costs are about 1.7–2.4 pips with the harsh add-on.
+- **After costs:** in 2018–25, the best pair, USDJPY, is +0.03 pip (t = 0.03).
+  Every other pair loses, most with t ≤ −2.7.
+- **Why gold differs:** the FX pairs *are* the shock and have already moved by
+  the time it registers. Gold reacts with a lag (H07–H10), and that lag is
+  the tradable part.
+
 ## Question
 
 After the live signal fires, does each of six dollar pairs keep moving in the
