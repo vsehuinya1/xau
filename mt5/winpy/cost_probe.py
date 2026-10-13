@@ -1,16 +1,18 @@
 """Measure round-trip trading costs: buy the minimum lot at market, close it at
 once, and report commission, slippage and latency from the deal history.
 
-Refuses to run on anything but a demo account.
+Refuses to run on anything but a demo account. PROBE_SYMBOL picks the symbol
+(default XAUUSD).
 
 Run with the Windows Python in the container:
   docker exec -i xau-mt5 bash -c 'wine "$WINEPREFIX/drive_c/Program Files/Python311/python.exe" -' < mt5/winpy/cost_probe.py
 """
+import os
 import time
 
 import MetaTrader5 as mt5
 
-SYMBOL = "XAUUSD"
+SYMBOL = os.environ.get("PROBE_SYMBOL", "XAUUSD")
 MAGIC = 26092501  # tags this script's orders
 # SYMBOL_FILLING_* bit flags from MQL5; the Python package doesn't export them.
 FILLING_FOK, FILLING_IOC = 1, 2
@@ -22,7 +24,9 @@ if account.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO:
 if not mt5.terminal_info().trade_allowed:
     raise SystemExit("Algo Trading is switched off in the terminal")
 
+mt5.symbol_select(SYMBOL, True)
 info = mt5.symbol_info(SYMBOL)
+nd = info.digits
 lot = info.volume_min
 if info.filling_mode & FILLING_IOC:
     filling = mt5.ORDER_FILLING_IOC
@@ -59,10 +63,10 @@ fees = sum(d.fee for d in deals)
 profit = sum(d.profit for d in deals)
 per_lot = 1 / lot
 print(f"account {account.login} ({account.server}, demo); {lot} lot {SYMBOL}; filling {filling}")
-print(f"open : quote ask {open_quote:.2f} (spread {open_tick.ask - open_tick.bid:.2f}) -> filled {opened.price:.2f}, "
-      f"slippage {opened.price - open_quote:+.2f}, {open_ms:.0f} ms")
-print(f"close: quote bid {close_quote:.2f} (spread {close_tick.ask - close_tick.bid:.2f}) -> filled {closed.price:.2f}, "
-      f"slippage {close_quote - closed.price:+.2f}, {close_ms:.0f} ms")
+print(f"open : quote ask {open_quote:.{nd}f} (spread {open_tick.ask - open_tick.bid:.{nd}f}) -> filled {opened.price:.{nd}f}, "
+      f"slippage {opened.price - open_quote:+.{nd}f}, {open_ms:.0f} ms")
+print(f"close: quote bid {close_quote:.{nd}f} (spread {close_tick.ask - close_tick.bid:.{nd}f}) -> filled {closed.price:.{nd}f}, "
+      f"slippage {close_quote - closed.price:+.{nd}f}, {close_ms:.0f} ms")
 print(f"deals: {[(d.entry, d.price, d.commission, d.fee, d.profit) for d in deals]}")
 print(f"round trip: price P&L ${profit:.2f}, commission ${commission:.2f}, fees ${fees:.2f} "
       f"-> per 1.0 lot: commission ${commission * per_lot:.2f}, price cost ${-profit * per_lot:.2f}")

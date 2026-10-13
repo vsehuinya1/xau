@@ -42,8 +42,9 @@ Add a row when a hypothesis is registered, and update it when it's run.
 | H17 | Volatility gate for dollar-shock momentum: trade only if beta × ATR ≥ cost (beta from 2009–17), tested on 2018–25 | 2026-10-09 | 1 | 0 | **PASSED**: per trade +$0.99 against +$0.38 ungated (t = 2.65), higher total, half the drawdown; added to the paper bot |
 
 | H18 | Forex pairs after broad dollar shocks: six pairs traded in the dollar's direction for 30 min | 2026-10-13 | 6 | 0 | **failed**: gross follow-through is 0–2 pips, below the ~1.7–2.4 pip cost; no pair is positive after costs in either sample. The FX pairs lead the shock; gold lags it |
+| H19 | Silver traded on dollar shocks with a volatility gate (beta from 2009–17), tested on 2018–25 | 2026-10-13 | 1 | 0 | not run |
 
-**Running total:** 52
+**Running total:** 53
 
 ## Unconfirmed observations
 
