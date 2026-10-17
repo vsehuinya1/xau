@@ -64,7 +64,7 @@ Oct 2025 to Sep 2026 as unseen.
 - Pepperstone's one-minute bars are real one-minute data only from mid-2017, with full coverage from 2018. Before that, the M1 series holds hourly bars (2016) and daily bars (1998–2015). Reaching the oldest bars needs MaxBars of at least 3.3 million; the entrypoint sets 5 million through the startup config, although `common.ini` keeps showing 100,000. Each bar carries a `spread` in points: the median was 7 in 2018 and 13 in 2026, matching the recorded ticks.
 - XAUUSD at Pepperstone: 100 oz per lot, 0.01 lot minimum, and a $0.01 move is worth $1 per lot.
 - Costs on the Razor demo, from a 0.01-lot round trip on 2026-09-25 (`mt5/winpy/cost_probe.py`):
-  - **Commission:** $0.04 per side on 0.01 lot. MT5 rounds to the cent, so the per-lot rate is somewhere from $3.50 to $4.49 per side; confirm it with a larger demo trade.
+  - **Commission:** $3.50 per lot per side, which is $0.07/oz for a round trip. The probe showed $0.04 per side on 0.01 lot after MT5's rounding to the cent. Each 0.10-lot paper trade has since been charged exactly $0.70 per round trip (checked 2026-10-17).
   - **Spread:** $0.11 at the time.
   - **Total:** a round trip costs about $0.18–0.20 per ounce.
   - **Execution:** orders fill as IOC and take 150–200 ms from this VPS.
